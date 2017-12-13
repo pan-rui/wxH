@@ -19,10 +19,6 @@
     "rewire": "*",
     "istanbul": "*"
   },
-  "dependencies": {
-    "urllib": "2.21.0",
-    "formstream":"^1.1.0"
-  },
   "author": "pan rui",
   "license": "MIT",
   "readmeFilename": "README.md",
