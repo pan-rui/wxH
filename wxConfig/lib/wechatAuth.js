@@ -3,7 +3,7 @@ const path = require('path');
 const url = require('url');
 
 //import config
-const config = require('./wxConfig');
+// const config = require('../index');
 
 //进行sha1加密
 function sha1(str) {
@@ -13,14 +13,14 @@ function sha1(str) {
     return str;
 }
 
-function wechatAuth(req, res) {
+function wechatAuth(req, res,token) {
     var query = url.parse(req.url, true).query;
     var signature = query.signature;
     var echostr = query.echostr;
     var timestamp = query['timestamp'];
     var nonce = query.nonce;
 
-    var reqArray = [nonce, timestamp, config.token,config.encodingAESKey];
+    var reqArray = [nonce, timestamp, token];
 
     //对数组进行字典排序
     reqArray.sort();
@@ -31,7 +31,7 @@ function wechatAuth(req, res) {
         res.end(echostr);
     } else {
         res.end("false");
-        console.log("授权失败!");
+        console.log("授权失败!"+JSON.stringify(config));
     }
 }
 

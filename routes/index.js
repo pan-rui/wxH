@@ -2,14 +2,13 @@ var express = require('express');
 var router = express.Router();
 var wechat = require('wechat');
 var WechatAPI = require('wechat-api');
-var wxConfig = require('../config/wxConfig');
-var wxAuth = require('../config/wechatAuth');
+var wxConfig = require('wxConfig');
 
-var api = new WechatAPI(appid, appsecret);
+var api = new WechatAPI(wxConfig.appId, wxConfig.appSecret);
 
 /* GET home page. */
 router.get('/verify', function(req, res, next) {
-    wxAuth(req, res);
+    wxConfig.wxVerify(req, res,wxConfig.token);
 });
 
 
