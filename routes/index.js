@@ -40,8 +40,7 @@ router.post('/verify',wechat(wxConfig,function (req,res,next) {
             content: '感谢您的关注!',
             type: 'text'
         })
-    }
-    else {
+    }else {
         // 回复高富帅(图文回复)
         res.reply([
             {
