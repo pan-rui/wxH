@@ -8,7 +8,7 @@ var VIEW_DIR = path.join(__dirname, '..', 'views');
 
 var config = require('../wxConfig/index');
 
-var oauth = new wechat.OAuth(config.appid, config.appsecret);
+// var oauth = new wechat.OAuth(config.appid, config.appsecret);
 
 var List = require('wechat').List;
 List.add('view', [

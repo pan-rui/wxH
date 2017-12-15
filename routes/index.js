@@ -4,7 +4,7 @@ var wechat = require('wechat');
 var WechatAPI = require('wechat-api');
 var wxConfig = require('wxConfig');
 
-var api = new WechatAPI(wxConfig.appId, wxConfig.appSecret);
+var api = new WechatAPI(wxConfig.appid, wxConfig.appSecret);
 
 /* GET home page. */
 router.get('/verify', function(req, res, next) {

@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var mp = require('./routes/wechat_mp');
+// var mp = require('./routes/wechat_mp');
 // var wechat = require('wechat');
 var app = express();
 
@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
-app.use('/msg',mp.reply);
+// app.use('/msg',mp.reply);
 // app.use('/verify',wech);
 
 // catch 404 and forward to error handler
