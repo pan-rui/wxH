@@ -20,6 +20,7 @@
     "wechat"
   ],
   "dependencies": {
+    "ejs": "^2.5.7",
     "formstream": ">=1.0.0",
     "urllib": "2.21.0"
   },
