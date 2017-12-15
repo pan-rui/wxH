@@ -35,6 +35,7 @@ router.post('/verify',wechat(wxConfig,function (req,res,next) {
             }
         });
     }else if(message.Event === 'subscribe'){
+        console.log(JSON.stringify(message));
         res.reply({
             content: '感谢您的关注!',
             type: 'text'
