@@ -7,8 +7,10 @@ bluebird.promisifyAll(rediz.Multi.prototype);
 const nodemailer = require('nodemailer');
 const mysql = require('mysql');
 const wechatApi = require('wechat-api');
+const wxConfig = require('wxConfig');
 var redis = rediz.createClient({host: '31.220.44.191', port: 6379, password: 'panrui~'});
 const url57 = 'http://www.boc.cn/fimarkets/foreignx/';
+const api = new wechatApi(wxConfig.appid, wxConfig.appSecret);
 
 exports.getResult = function getResult(url, callback) {
     return http.get(url, (res) => {
@@ -74,7 +76,6 @@ exports.tes = function processData() {
                                 }
 
                             });
-                        console.log(JSON.stringify(articles));
                         wechatApi.uploadNews({articles:articles},(err,result)=>{
                                 console.log(JOSN.stringify(result));
                                 wechatApi.massSendNews(result.media_id,true,(er,re)=>{
