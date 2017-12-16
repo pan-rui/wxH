@@ -63,6 +63,8 @@ exports.tes = function processData() {
                         let _$ = cheerio.load(da2.body);
                         let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
                             b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
+                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
+                        this.sendMail({html: html});
                             let articles=[];
                             [b1,b2,b3].forEach((val)=>{
                                 let text=val.prev().text();
@@ -70,23 +72,20 @@ exports.tes = function processData() {
                                     thumb_media_id:'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                     author:'小潘',
                                     title:text.substring(3).replace(/元 /g,'元'),
-                                    content:val.prev().html()+val.html()+val.next().html(),
+                                    content:$.html(val.prev())+'<br/>'+$.html(val)+'<br/>'+$.html(val.next()),
                                     digest:'市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic:'1',
                                 }
 
                             });
-/*                        api.uploadNews({articles:articles},(err,result)=>{
+                        console.log(JSON.stringify(articles));
+                        api.uploadNews({articles:articles},(err,result)=>{
                                 console.log(JSON.stringify(result));
                                 api.massSendNews(result.media_id,true,(er,re)=>{
                                     console.log(JSON.stringify(re));
                                 })
-                        });*/
-                        console.log(JSON.stringify(articles));
+                        });
                         //TODO:邮件,微信群发,存库.
-                        let html = `<html><head></head><body><p style="color: red;">${$.html(b1.prev())}</p><p style="color: green;">${$.html(b2.prev())}</p><p style="color: blue;">${b3.prev().html()}</p> </body>`
-                        console.log(html);
-                        this.sendMail({html: html});
                         redis.setAsync(date, '1', 'EX', 28800).then((r) => {
                             // redis.getAsync(date).then((rr) => {console.log(rr)})
                             console.log("今日数据已处理.")
