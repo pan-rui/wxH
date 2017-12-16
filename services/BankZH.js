@@ -76,15 +76,16 @@ exports.tes = function processData() {
                                 }
 
                             });
-                        api.uploadNews({articles:articles},(err,result)=>{
+/*                        api.uploadNews({articles:articles},(err,result)=>{
                                 console.log(JSON.stringify(result));
                                 api.massSendNews(result.media_id,true,(er,re)=>{
                                     console.log(JSON.stringify(re));
                                 })
-                        });
-                        articles
+                        });*/
+                        console.log(JSON.stringify(articles));
                         //TODO:邮件,微信群发,存库.
-                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`
+                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().html()}</p><p style="color: green;">${b2.prev().html()}</p><p style="color: blue;">${b3.prev().html()}</p> </body>`
+                        console.log(html);
                         this.sendMail({html: html});
                         redis.setAsync(date, '1', 'EX', 28800).then((r) => {
                             // redis.getAsync(date).then((rr) => {console.log(rr)})
