@@ -74,8 +74,12 @@ exports.tes = function processData() {
                                 }
 
                             });
+                        console.log(JSON.stringify(articles));
                         wechatApi.API.uploadNews({articles:articles},(err,result)=>{
-                                console.log(result);
+                                console.log(JOSN.stringify(result));
+                                wechatApi.API.massSendNews(result.media_id,true,(er,re)=>{
+                                    console.log(JSON.stringify(re));
+                                })
                         });
                         articles
                         //TODO:邮件,微信群发,存库.
