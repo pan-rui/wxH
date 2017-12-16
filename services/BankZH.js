@@ -69,7 +69,7 @@ exports.tes = function processData() {
                                 articles[articles.length]={
                                     thumb_media_id:'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                     author:'小潘',
-                                    title:text.substring(3).replace(/元 /g,''),
+                                    title:text.substring(3).replace(/元 /g,'元'),
                                     content:val.prev().html()+val.html()+val.next().html(),
                                     digest:'市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic:'1',
@@ -84,7 +84,7 @@ exports.tes = function processData() {
                         });*/
                         console.log(JSON.stringify(articles));
                         //TODO:邮件,微信群发,存库.
-                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().html()}</p><p style="color: green;">${b2.prev().html()}</p><p style="color: blue;">${b3.prev().html()}</p> </body>`
+                        let html = `<html><head></head><body><p style="color: red;">${$.html(b1.prev())}</p><p style="color: green;">${$.html(b2.prev())}</p><p style="color: blue;">${b3.prev().html()}</p> </body>`
                         console.log(html);
                         this.sendMail({html: html});
                         redis.setAsync(date, '1', 'EX', 28800).then((r) => {
