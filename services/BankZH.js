@@ -77,7 +77,7 @@ exports.tes = function processData() {
 
                             });
                         api.uploadNews({articles:articles},(err,result)=>{
-                                console.log(JOSN.stringify(result));
+                                console.log(JSON.stringify(result));
                                 api.massSendNews(result.media_id,true,(er,re)=>{
                                     console.log(JSON.stringify(re));
                                 })
