@@ -67,7 +67,7 @@ exports.tes = function processData() {
                             [b1,b2,b3].forEach((val)=>{
                                 let text=val.prev().text();
                                 articles[articles.length]={
-                                    thumb_media_id:'6knVxeY2v8rr_fIC_L3t5r-L5SV93fGtWlB6Nx1kkg4',
+                                    thumb_media_id:'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                     author:'小潘',
                                     title:text.substring(3).replace(/元 /g,''),
                                     content:val.prev().html()+val.html()+val.next().html(),
@@ -96,6 +96,7 @@ exports.tes = function processData() {
         }
     })
 }
+// thumb_media_id:'6knVxeY2v8rr_fIC_L3t5r-L5SV93fGtWlB6Nx1kkg4',
 
 exports.sendMail = function sendMail(opt) {
     let transporter = nodemailer.createTransport({
