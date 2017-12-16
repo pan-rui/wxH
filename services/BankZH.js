@@ -76,9 +76,9 @@ exports.tes = function processData() {
                                 }
 
                             });
-                        wechatApi.uploadNews({articles:articles},(err,result)=>{
+                        api.uploadNews({articles:articles},(err,result)=>{
                                 console.log(JOSN.stringify(result));
-                                wechatApi.massSendNews(result.media_id,true,(er,re)=>{
+                                api.massSendNews(result.media_id,true,(er,re)=>{
                                     console.log(JSON.stringify(re));
                                 })
                         });
