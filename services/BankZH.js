@@ -72,7 +72,7 @@ exports.tes = function processData() {
                                     thumb_media_id:'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                     author:'小潘',
                                     title:text.substring(3).replace(/元 /g,'元'),
-                                    content:$.html(val.prev())+'<br/>'+$.html(val)+'<br/>'+$.html(val.next()),
+                                    content:'<html><head></head><body>'+$.html(val.prev())+'<br/>'+$.html(val)+'<br/>'+$.html(val.next())+'</body></html>',
                                     digest:'市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic:'1',
                                 }
