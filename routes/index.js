@@ -3,14 +3,18 @@ var router = express.Router();
 var wechat = require('wechat');
 var WechatAPI = require('wechat-api');
 var wxConfig = require('wxConfig');
+var tes = require('../services/BankZH');
 
 var api = new WechatAPI(wxConfig.appid, wxConfig.appSecret);
-
+router.get('/',function(req,res,next){
+    tes.tes();
+    res.send('hello haha!');
+});
 /* GET home page. */
-router.get('/verify', function(req, res, next) {
+router.get('/msg', function(req, res, next) {
     wxConfig.wxVerify(req, res,wxConfig.token);
 });
-router.post('/verify',wechat(wxConfig,function (req,res,next) {
+router.post('/msg',wechat(wxConfig,function (req,res,next) {
     // 微信输入信息都在req.weixin上
     var message = req.weixin;
     if (message.FromUserName === 'diaosi') {

@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+const schedule=require('node-schedule');
+var tes = require('./services/BankZH');
 // var mp = require('./routes/wechat_mp');
 // var wechat = require('wechat');
 var app = express();
@@ -48,5 +50,10 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+/*var date=new Date();
+let rule1= new schedule.RecurrenceRule();
+rule1.minute = [1, 11, 21, 31, 41, 51];*/
+schedule.scheduleJob('1 */10 14-19 * * 1-5',function(){tes.tes()});
 
 module.exports = app;
