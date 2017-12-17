@@ -79,7 +79,7 @@ exports.tes = function processData() {
                                 let text=val.prev().text(),src=val.find('img').first().attr('src');
                                 let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
                                 let imgUrl=this.downImg(src,imgPath,(ph)=>{
-                                    let bb='';
+                                    var bb='';
                                     api.uploadImage(ph,(err,result)=>{
                                         if(err){
                                             console.log('上传文件错误'+JSON.stringify(err))
@@ -153,7 +153,7 @@ exports.sendMail = function sendMail(opt) {
 }
 
 exports.downImg=function downImg(url,path,callback) {
-    let imgUrl='';
+    var imgUrl='';
     http.get(url, function(res){
         var imgData = "";
         res.setEncoding("binary"); //一定要设置response的编码为binary否则会下载下来的图片打不开
