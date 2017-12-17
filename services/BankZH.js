@@ -79,7 +79,8 @@ exports.tes = function processData() {
                                 let text=val.prev().text(),src=val.find('img').first().attr('src');
                                 let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
                                 let imgUrl=this.downImg(src,imgPath,(ph)=>{
-                                    return api.uploadImage(ph,(err,result)=>{
+                                    let bb='';
+                                    api.uploadImage(ph,(err,result)=>{
                                         if(err){
                                             console.log('上传文件错误'+JSON.stringify(err))
                                         }else{
@@ -87,9 +88,10 @@ exports.tes = function processData() {
                                             // valText = valText.replace(src, result.url);
                                             // valText = $.html(val.html('< src="'+result.url+'">'));
                                             // console.log(result.url + '======' +src+'======='+valText);
-                                            return result.url;
+                                            bb=result.url;
                                         }
                                     });
+                                    return bb;
                                 });
                                 console.log('-------------------------->' + imgUrl);
                                 let valText = $.html(val).replace(src, imgUrl);
