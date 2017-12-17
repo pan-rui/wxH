@@ -86,7 +86,7 @@ exports.tes = function processData() {
                                     }else{
                                         // valText = val.find('img').first().attr('src', result.url);
                                         // valText = valText.replace(src, result.url);
-                                        valText = $.html(val.html('<img src="'+result.url+'"></img>'));
+                                        valText = $.html(val.html('< src="'+result.url+'">'));
                                         console.log(result.url + '======' +src+'======='+valText);
                                     }
                                 });
@@ -98,7 +98,7 @@ exports.tes = function processData() {
                                     digest:'市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic:'0',
                                 }
-
+                                console.log(JSON.stringify(articles));
                             });
 
                         api.uploadNews({articles:articles},(err,result)=>{
