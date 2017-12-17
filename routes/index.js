@@ -4,7 +4,7 @@ var wechat = require('wechat');
 var WechatAPI = require('wechat-api');
 var wxConfig = require('wxConfig');
 var tes = require('../services/BankZH');
-
+const firstIn={video:'cvmBAMM_C1js-uiw3FKfAgUjA25AJ_9QvCmtlr9mdODm9s234Xs6WcB8Tq-lusgT'}
 var api = new WechatAPI(wxConfig.appid, wxConfig.appSecret);
 router.get('/',function(req,res,next){
     tes.tes();
@@ -41,8 +41,11 @@ router.post('/msg',wechat(wxConfig,function (req,res,next) {
     }else if(message.Event === 'subscribe'){
         console.log(JSON.stringify(message));
         res.reply({
-            content: '感谢您的关注!',
-            type: 'text'
+            content: {
+                title:'美元绝招，剑指2019，谁鹿将死谁手？',
+                mediaId:firstIn.video
+            },
+            type: 'video'
         })
     }else {
         // 回复高富帅(图文回复)

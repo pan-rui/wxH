@@ -1,6 +1,7 @@
 const cheerio = require('cheerio');
 const http = require('http');
 const rediz = require('redis');
+const fs = require('fs');
 const bluebird = require('bluebird');
 bluebird.promisifyAll(rediz.RedisClient.prototype);
 bluebird.promisifyAll(rediz.Multi.prototype);
@@ -11,7 +12,7 @@ const wxConfig = require('wxConfig');
 var redis = rediz.createClient({host: '31.220.44.191', port: 6379, password: 'panrui~'});
 const url57 = 'http://www.boc.cn/fimarkets/foreignx/';
 const api = new wechatApi(wxConfig.appid, wxConfig.appSecret);
-
+const currency={'澳元/美元':['AUD','ct-qkOcG2Ig5Zv7aQ24STKOKJEpiXzP8nrKepsaR3WFmGQtE5oc8ab2emr4VLtx3'],'欧元/美元':['EUR','qxMdcC2a3YQ6avvNo7zKHe1mGd62zJ6awuQVWT00E4QpjuEgkDcgQqTxIjRz1law'],'英镑/美元':['GBP','49h_kjEbutnJ6ztRuRdb1X8pW9xq0Qb5-TSyY1Ey6H6ZJRNc4Yu_ZlCzfCPlVklZ'],'美元/日元':['JPY','yRlO9WW6bw3Sc1REHScknP2rDOjCjj_VUKC0NnVYOdGyGrAflQpMfjpY7ncQoELn'],'美元/加元':['CAD','It1Tyjdyl9WCCpalcIBc0B99a7lPlhGcNFCrDdqvHZ79TKa0m2GQQ8iTWNnZKeaj']};
 exports.getResult = function getResult(url, callback) {
     return http.get(url, (res) => {
         if (res.statusCode == 200) {
@@ -66,19 +67,38 @@ exports.tes = function processData() {
                         let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
                         this.sendMail({html: html});
                             let articles=[];
+                            articles[articles.length]={
+                                thumb_media_id:'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
+                                author:'小潘',
+                                title:'充气女友进化论,哈哈',
+                                content:'<html><head></head><body><iframe class="video_iframe wx_video_iframe" data-vidtype="2" allowfullscreen="" frameborder="0" style="position:relative; z-index:1;" height="359" width="638" src="https://playvideo.qcloud.com/vod/4564972818696576654/iplayer.html?appid=1255685958&fileid=4564972818696576654&autoplay=0&sw=854&sh=480" data-ratio="1.7666666666666666" data-w="848"></iframe></body></html>',
+                                digest:'市场本没有波动,做得人多了就有了波动!',
+                                show_cover_pic:'0',
+                            };
                             [b1,b2,b3].forEach((val)=>{
-                                let text=val.prev().text();
+                                let text=val.prev().text(),src=b1.find('img').first().attr('src');
+                                let imgPath = '../public/images/' + currency[text.substr(3, 5)][0] + '.gif';
+                                this.downImg(src,imgPath);
+                                let valText=$.html(val);
+                                api.uploadImage(imgPath,(err,result)=>{
+                                    if(err){
+                                        console.log(JSON.stringify(err))
+                                    }else{
+                                        // valText = val.find('img').first().attr('src', result.url);
+                                        valText = valText.replace(src, result.url);
+                                    }
+                                });
                                 articles[articles.length]={
-                                    thumb_media_id:'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
+                                    thumb_media_id:currency[text.substr(3, 5)][1],
                                     author:'小潘',
                                     title:text.substring(3).replace(/元 /g,'元'),
-                                    content:'<html><head></head><body>'+$.html(val.prev())+'<br/>'+$.html(val)+'<br/>'+$.html(val.next())+'</body></html>',
+                                    content:'<html><head></head><body>'+$.html(val.prev())+'<br/>'+valText+'<br/>'+$.html(val.next())+'</body></html>',
                                     digest:'市场本没有波动,做得人多了就有了波动!',
-                                    show_cover_pic:'1',
+                                    show_cover_pic:'0',
                                 }
 
                             });
-                        console.log(JSON.stringify(articles));
+
                         api.uploadNews({articles:articles},(err,result)=>{
                                 console.log(JSON.stringify(result));
                                 api.massSendNews(result.media_id,true,(er,re)=>{
@@ -123,6 +143,23 @@ exports.sendMail = function sendMail(opt) {
     });
 }
 
+exports.downImg=function downImg(url,path) {
+    http.get(url, function(res){
+        var imgData = "";
+        res.setEncoding("binary"); //一定要设置response的编码为binary否则会下载下来的图片打不开
+        res.on("data", function(chunk){
+            imgData+=chunk;
+        });
+        res.on("end", function(){
+            fs.writeFile(path, imgData, "binary", function(err){
+                if(err){
+                    console.log("down fail");
+                }
+                console.log("down success");
+            });
+        });
+    });
+}
 /*
 http.get('http://nodejs.org/dist/index.json', (res) => {
     const { statusCode } = res;
