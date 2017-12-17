@@ -91,6 +91,7 @@ exports.tes = function processData() {
                                             bb=result.url;
                                         }
                                     });
+                                    console.log('第一个Callback返回的URL' + bb);
                                     return bb;
                                 });
                                 console.log('-------------------------->' + imgUrl);
@@ -160,7 +161,7 @@ exports.downImg=function downImg(url,path,callback) {
         res.on("data", function(chunk){
             imgData+=chunk;
         });
-       return res.on("end", function(){
+       res.on("end", function(){
             fs.writeFile(path, imgData, "binary", function(err,result){
                 if(err){
                     console.log(url+'\n'+path+'\n'+JSON.stringify(err));
@@ -168,9 +169,11 @@ exports.downImg=function downImg(url,path,callback) {
                 }
                 // console.log('down success');
                 imgUrl=callback(path);
+                console.log('downImg中callback返回的URL' + imgUrl);
             });
         });
     });
+    console.log('downImg中返回的URL'+imgUrl)
     return imgUrl;
 }
 /*
