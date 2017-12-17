@@ -78,18 +78,21 @@ exports.tes = function processData() {
                             [b1,b2,b3].forEach((val)=>{
                                 let text=val.prev().text(),src=val.find('img').first().attr('src');
                                 let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
-                                this.downImg(src,imgPath);
-                                let valText=$.html(val);
-                                api.uploadImage(imgPath,(err,result)=>{
-                                    if(err){
-                                        console.log('上传文件错误'+JSON.stringify(err))
-                                    }else{
-                                        // valText = val.find('img').first().attr('src', result.url);
-                                        // valText = valText.replace(src, result.url);
-                                        valText = $.html(val.html('< src="'+result.url+'">'));
-                                        console.log(result.url + '======' +src+'======='+valText);
-                                    }
+                                let imgUrl=this.downImg(src,imgPath,(ph)=>{
+                                    return api.uploadImage(ph,(err,result)=>{
+                                        if(err){
+                                            console.log('上传文件错误'+JSON.stringify(err))
+                                        }else{
+                                            // valText = val.find('img').first().attr('src', result.url);
+                                            // valText = valText.replace(src, result.url);
+                                            // valText = $.html(val.html('< src="'+result.url+'">'));
+                                            // console.log(result.url + '======' +src+'======='+valText);
+                                            return result.url;
+                                        }
+                                    });
                                 });
+                                console.log('-------------------------->' + imgUrl);
+                                let valText = $.html(val).replace(src, imgUrl);
                                 articles[articles.length]={
                                     thumb_media_id:currency[text.substr(3, 5)][1],
                                     author:'小潘',
@@ -98,9 +101,8 @@ exports.tes = function processData() {
                                     digest:'市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic:'0',
                                 }
-                                console.log(JSON.stringify(articles));
                             });
-
+                                console.log(JSON.stringify(articles));
                         api.uploadNews({articles:articles},(err,result)=>{
                                 console.log(JSON.stringify(result));
                                 api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw',result.media_id,(er,re)=>{
@@ -148,7 +150,7 @@ exports.sendMail = function sendMail(opt) {
     });
 }
 
-exports.downImg=function downImg(url,path) {
+exports.downImg=function downImg(url,path,callback) {
     http.get(url, function(res){
         var imgData = "";
         res.setEncoding("binary"); //一定要设置response的编码为binary否则会下载下来的图片打不开
@@ -162,6 +164,7 @@ exports.downImg=function downImg(url,path) {
                     return;
                 }
                 // console.log('down success');
+                return callback(path);
             });
         });
     });
