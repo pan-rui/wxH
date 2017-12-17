@@ -67,25 +67,26 @@ exports.tes = function processData() {
                         let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
                         this.sendMail({html: html});
                             let articles=[];
-                            articles[articles.length]={
+/*                            articles[articles.length]={
                                 thumb_media_id:'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                 author:'小潘',
                                 title:'充气女友进化论,哈哈',
                                 content:'<html><head></head><body><iframe class="video_iframe wx_video_iframe" data-vidtype="2" allowfullscreen="" frameborder="0" style="position:relative; z-index:1;" height="359" width="638" src="/cgi-bin/readtemplate?t=tmpl/video_tmpl&amp;vid=o05200n3maw" data-ratio="1.7647058823529411" data-w="480"></iframe></body></html>',
                                 digest:'市场本没有波动,做得人多了就有了波动!',
                                 show_cover_pic:'0',
-                            };
+                            };*/
                             [b1,b2,b3].forEach((val)=>{
-                                let text=val.prev().text(),src=b1.find('img').first().attr('src');
+                                let text=val.prev().text(),src=val.find('img').first().attr('src');
                                 let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
                                 this.downImg(src,imgPath);
                                 let valText=$.html(val);
                                 api.uploadImage(imgPath,(err,result)=>{
                                     if(err){
-                                        console.log(JSON.stringify(err))
+                                        console.log('上传文件错误'+JSON.stringify(err))
                                     }else{
                                         // valText = val.find('img').first().attr('src', result.url);
                                         valText = valText.replace(src, result.url);
+                                        console.log(result.url + '======' + valText);
                                     }
                                 });
                                 articles[articles.length]={
@@ -154,12 +155,12 @@ exports.downImg=function downImg(url,path) {
             imgData+=chunk;
         });
         res.on("end", function(){
-            fs.writeFile(path, imgData, "binary", function(err){
+            fs.writeFile(path, imgData, "binary", function(err,result){
                 if(err){
                     console.log(url+'\n'+path+'\n'+JSON.stringify(err));
                     return;
                 }
-                console.log("down success");
+                // console.log('down success');
             });
         });
     });
