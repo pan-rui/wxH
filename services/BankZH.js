@@ -77,7 +77,7 @@ exports.tes = function processData() {
                             };
                             [b1,b2,b3].forEach((val)=>{
                                 let text=val.prev().text(),src=b1.find('img').first().attr('src');
-                                let imgPath = '../public/images/' + currency[text.substr(3, 5)][0] + '.gif';
+                                let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
                                 this.downImg(src,imgPath);
                                 let valText=$.html(val);
                                 api.uploadImage(imgPath,(err,result)=>{
