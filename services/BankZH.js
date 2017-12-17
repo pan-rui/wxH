@@ -151,23 +151,25 @@ exports.sendMail = function sendMail(opt) {
 }
 
 exports.downImg=function downImg(url,path,callback) {
+    let imgUrl='';
     http.get(url, function(res){
         var imgData = "";
         res.setEncoding("binary"); //一定要设置response的编码为binary否则会下载下来的图片打不开
         res.on("data", function(chunk){
             imgData+=chunk;
         });
-        res.on("end", function(){
+       return res.on("end", function(){
             fs.writeFile(path, imgData, "binary", function(err,result){
                 if(err){
                     console.log(url+'\n'+path+'\n'+JSON.stringify(err));
                     return;
                 }
                 // console.log('down success');
-                return callback(path);
+                imgUrl=callback(path);
             });
         });
     });
+    return imgUrl;
 }
 /*
 http.get('http://nodejs.org/dist/index.json', (res) => {
