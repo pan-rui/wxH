@@ -101,9 +101,12 @@ exports.tes = function processData() {
 
                         api.uploadNews({articles:articles},(err,result)=>{
                                 console.log(JSON.stringify(result));
-                                api.massSendNews(result.media_id,true,(er,re)=>{
+                                api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw',result.media_id,(er,re)=>{
                                     console.log(JSON.stringify(re));
-                                })
+                                });
+/*                                api.massSendNews(result.media_id,true,(er,re)=>{
+                                    console.log(JSON.stringify(re));
+                                })*/
                         });
                         //TODO:邮件,微信群发,存库.
                         redis.setAsync(date, '1', 'EX', 28800).then((r) => {
