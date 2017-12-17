@@ -85,8 +85,9 @@ exports.tes = function processData() {
                                         console.log('上传文件错误'+JSON.stringify(err))
                                     }else{
                                         // valText = val.find('img').first().attr('src', result.url);
-                                        valText = valText.replace(src, result.url);
-                                        console.log(result.url + '======' + valText);
+                                        // valText = valText.replace(src, result.url);
+                                        valText = $.html(val.html('<img src="'+result.url+'"></img>'));
+                                        console.log(result.url + '======' +src+'======='+valText);
                                     }
                                 });
                                 articles[articles.length]={
