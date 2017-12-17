@@ -105,7 +105,7 @@ exports.tes = function processData() {
                                     show_cover_pic:'0',
                                 }
                             });
-                                console.log(JSON.stringify(articles));
+                                // console.log(JSON.stringify(articles));
                         api.uploadNews({articles:articles},(err,result)=>{
                                 console.log(JSON.stringify(result));
                                 api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw',result.media_id,(er,re)=>{
