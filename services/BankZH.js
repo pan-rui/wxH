@@ -7,6 +7,7 @@ bluebird.promisifyAll(rediz.RedisClient.prototype);
 bluebird.promisifyAll(rediz.Multi.prototype);
 const nodemailer = require('nodemailer');
 const mysql = require('mysql');
+const async = require('async');
 const wechatApi = require('wechat-api');
 const wxConfig = require('wxConfig');
 var redis = rediz.createClient({host: '31.220.44.191', port: 6379, password: 'panrui~'});
@@ -14,7 +15,7 @@ const url57 = 'http://www.boc.cn/fimarkets/foreignx/';
 const api = new wechatApi(wxConfig.appid, wxConfig.appSecret);
 const currency={'澳元/美元':['AUD','ct-qkOcG2Ig5Zv7aQ24STKOKJEpiXzP8nrKepsaR3WFmGQtE5oc8ab2emr4VLtx3'],'欧元/美元':['EUR','qxMdcC2a3YQ6avvNo7zKHe1mGd62zJ6awuQVWT00E4QpjuEgkDcgQqTxIjRz1law'],'英镑/美元':['GBP','49h_kjEbutnJ6ztRuRdb1X8pW9xq0Qb5-TSyY1Ey6H6ZJRNc4Yu_ZlCzfCPlVklZ'],'美元/日元':['JPY','yRlO9WW6bw3Sc1REHScknP2rDOjCjj_VUKC0NnVYOdGyGrAflQpMfjpY7ncQoELn'],'美元/加元':['CAD','It1Tyjdyl9WCCpalcIBc0B99a7lPlhGcNFCrDdqvHZ79TKa0m2GQQ8iTWNnZKeaj']};
 exports.getResult = function getResult(url, callback) {
-    return http.get(url, (res) => {
+    http.get(url, (res) => {
         if (res.statusCode == 200) {
             res.setEncoding('utf8');
             var body = '';
@@ -78,9 +79,9 @@ exports.tes = function processData() {
                             [b1,b2,b3].forEach((val)=>{
                                 let text=val.prev().text(),src=val.find('img').first().attr('src');
                                 let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
-                                let imgUrl=this.downImg(src,imgPath,(ph)=>{
+                                let imgUrl=this.downImg(src,imgPath,async (ph)=>{
                                     var bb='';
-                                    api.uploadImage(ph,(err,result)=>{
+                                   await api.uploadImage(ph,(err,result)=>{
                                         if(err){
                                             console.log('上传文件错误'+JSON.stringify(err))
                                         }else{
@@ -155,13 +156,13 @@ exports.sendMail = function sendMail(opt) {
 
 exports.downImg=function downImg(url,path,callback) {
     var imgUrl='';
-    http.get(url, function(res){
+   http.get(url,async function(res){
         var imgData = "";
         res.setEncoding("binary"); //一定要设置response的编码为binary否则会下载下来的图片打不开
-        res.on("data", function(chunk){
+       await res.on("data", function(chunk){
             imgData+=chunk;
         });
-       res.on("end", function(){
+       await res.on("end", function(){
             fs.writeFile(path, imgData, "binary", function(err,result){
                 if(err){
                     console.log(url+'\n'+path+'\n'+JSON.stringify(err));
