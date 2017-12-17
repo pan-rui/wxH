@@ -71,7 +71,7 @@ exports.tes = function processData() {
                                 thumb_media_id:'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                 author:'小潘',
                                 title:'充气女友进化论,哈哈',
-                                content:'<html><head></head><body><iframe class="video_iframe wx_video_iframe" data-vidtype="2" allowfullscreen="" frameborder="0" style="position:relative; z-index:1;" height="359" width="638" src="https://playvideo.qcloud.com/vod/4564972818696576654/iplayer.html?appid=1255685958&fileid=4564972818696576654&autoplay=0&sw=854&sh=480" data-ratio="1.7666666666666666" data-w="848"></iframe></body></html>',
+                                content:'<html><head></head><body><iframe class="video_iframe wx_video_iframe" data-vidtype="2" allowfullscreen="" frameborder="0" style="position:relative; z-index:1;" height="359" width="638" src="/cgi-bin/readtemplate?t=tmpl/video_tmpl&amp;vid=o05200n3maw" data-ratio="1.7647058823529411" data-w="480"></iframe></body></html>',
                                 digest:'市场本没有波动,做得人多了就有了波动!',
                                 show_cover_pic:'0',
                             };
@@ -156,7 +156,8 @@ exports.downImg=function downImg(url,path) {
         res.on("end", function(){
             fs.writeFile(path, imgData, "binary", function(err){
                 if(err){
-                    console.log("down fail");
+                    console.log(url+'\n'+path+'\n'+JSON.stringify(err));
+                    return;
                 }
                 console.log("down success");
             });
