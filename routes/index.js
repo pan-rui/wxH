@@ -73,7 +73,7 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
 
             }
         }else{
-            tes.getResult('http://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key='+strArry[0]+'&bk_length=600',(data)=>{
+            tes.getResult('http://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key='+encodeURIComponent(strArry[0])+'&bk_length=600',(data)=>{
                 let result = JSON.parse(data.body);
                 res.reply([
                     {
