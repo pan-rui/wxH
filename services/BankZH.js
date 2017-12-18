@@ -59,12 +59,12 @@ exports.dateFormat = function dateFormat(date, format) {
 exports.tes = function processData() {
     this.getResult(url57, function (data) {
         let $ = cheerio.load(data.body);
-        let li = $('div.news li').eq(1);
+        let li = $('div.news li').first();
         const date = li.find('span').first().text().replace('[', '').replace(']', '').trim();
         const href = li.find('a').first().attr('href');
         const text = li.find('a').first().text();
-        // if (this.dateFormat(new Date(),'yyyy-MM-dd')==date && '汇市观潮' == text.substr(0, 4)) {
-        if ('汇市观潮' == text.substr(0, 4)) {
+        if (this.dateFormat(new Date(),'yyyy-MM-dd')==date && '汇市观潮' == text.substr(0, 4)) {
+        // if ('汇市观潮' == text.substr(0, 4)) {
             redis.getAsync(date).then((ress) => {
                 if (!ress || ress != '1') {
                     this.getResult(url57 + href.substr(2), (da2) => {
