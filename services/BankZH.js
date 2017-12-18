@@ -78,17 +78,20 @@ exports.tes = function processData() {
                             thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                             author: '小潘',
                             title: '充气女友进化论,哈哈',
-                            content: '<html><head></head><body><iframe class="video_iframe wx_video_iframe" data-vidtype="2" allowfullscreen="" frameborder="0" style="position:relative; z-index:1;" height="359" width="638" src="https://mp.weixin.qq.com/cgi-bin/readtemplate?t=tmpl/video_tmpl&amp;vid=o05200n3maw" data-ratio="1.7647058823529411" data-w="480"></iframe></body></html>',
+                            content: '<html><head></head><body><iframe src="https://playvideo.qcloud.com/vod/4564972818692601128/iplayer.html?appid=1255685958&fileid=4564972818692601128&autoplay=0&sw=426&sh=240" frameborder="0" width="100%" height="240" scrolling="no"></iframe></body></html>',
                             digest: '市场本没有波动,做得人多了就有了波动!',
                             show_cover_pic: '0',
                         };
-                        let curIndex = 0;
-                        async.forEach([b1, b2, b3], (val, callback) => {
+                        let arry = [b1, b2, b3], curIndex = 0;
+                        var inter = 0;
+                        async.forEach(arry, (val, callback) => {
+                            let call = callback;
                             let text = val.prev().text(), src = val.find('img').first().attr('src');
                             // let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
                             let imgPath = currency[text.substr(3, 5)][0] + '.gif';
                             let imgUrl = '';
-                            async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => (api.uploadImage(rst1, (err, result) => {
+                            curIndex++;
+                            async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
                                 } else {
@@ -99,8 +102,7 @@ exports.tes = function processData() {
                                     // result = result.url;
                                     next(err, result);
                                 }
-                            }))], (err, rst) => {
-                                curIndex++;
+                            })], (err, rst) => {
                                 imgUrl = rst.url;
                                 console.log('得到的图片====' + imgUrl);
                                 let valText = $.html(val).replace(src, imgUrl);
@@ -108,32 +110,37 @@ exports.tes = function processData() {
                                     thumb_media_id: currency[text.substr(3, 5)][1],
                                     author: '小潘',
                                     title: text.substring(3).replace(/元 /g, '元'),
-                                    content: '<html><head></head><body>' + $.html(val.prev()) + '<br/>' + valText + '<br/>' + $.html(val.next()) + '</body></html>',
+                                    content: '<html><head></head><body>' + '<br/>' + valText + '<br/>' + $.html(val.next()) + '</body></html>',
                                     digest: '市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic: '0',
                                 }
-                                if (curIndex == 3) callback();
                             });
+                            callback();         //注意:放在大括号里调用不到...此行会执行3次,但最终只会调用一次方法
                         }, (err) => {
-                            // console.log(JSON.stringify(articles));
+                            console.log(JSON.stringify(articles));
                             if (err) {
                                 console.log(JSON.stringify(err));
                                 return;
                             }
-                            api.uploadNews({articles: articles}, (err, result) => {
-                                console.log(JSON.stringify(result));
-                                api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
-                                    console.log(JSON.stringify(re));
+                            let inter = 0;
+                            inter = setInterval(function () {
+                                if (articles.length < 4) return;
+                                api.uploadNews({articles: articles}, (err, result) => {
+                                    console.log(JSON.stringify(result));
+                                    api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
+                                        console.log(JSON.stringify(re));
+                                    });
+                                    /*                                api.massSendNews(result.media_id,true,(er,re)=>{
+                                                                        console.log(JSON.stringify(re));
+                                                                    })*/
+                                    //TODO:邮件,微信群发,存库.
+                                    redis.setAsync(date, '1', 'EX', 28800).then((r) => {
+                                        // redis.getAsync(date).then((rr) => {console.log(rr)})
+                                        console.log("今日数据已处理.")
+                                    });
                                 });
-                                /*                                api.massSendNews(result.media_id,true,(er,re)=>{
-                                                                    console.log(JSON.stringify(re));
-                                                                })*/
-                                //TODO:邮件,微信群发,存库.
-                                redis.setAsync(date, '1', 'EX', 28800).then((r) => {
-                                    // redis.getAsync(date).then((rr) => {console.log(rr)})
-                                    console.log("今日数据已处理.")
-                                });
-                            });
+                                clearInterval(inter);
+                            }, 500)
 
                         });
                     });
@@ -176,14 +183,14 @@ exports.downImg = function downImg(url, path, callback) {
         res.on("data", function (chunk) {
             imgData += chunk;
         });
-        res.on("end", function () {
-            fs.writeFile(path, imgData, "binary", function (err, result1) {
+        res.on("end", async function () {
+            await fs.writeFile(path, imgData, "binary", async function (err, result1) {
                 if (err) {
                     console.log(url + '\n' + path + '\n' + JSON.stringify(err));
                     return;
                 }
                 // console.log('down success');
-                callback(err, path);
+                await callback(err, path);
             });
         });
     });
@@ -221,3 +228,4 @@ http.get('http://nodejs.org/dist/index.json', (res) => {
 }).on('error', (e) => {
     console.error(`Got error: ${e.message}`);
 });*/
+

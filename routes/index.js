@@ -60,5 +60,10 @@ router.post('/msg',wechat(wxConfig,function (req,res,next) {
     }
 }))
 
+router.get('/eur',function(req,res,next){
+    res.render('login',{data:{a:'aa',b:'bb'}},(err,result)=>{
+        console.log(JSON.stringify(err) + '\n' + JSON.stringify(result));
+    });
+});
 
 module.exports = router;
