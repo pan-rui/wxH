@@ -88,7 +88,7 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                                     content: {
                                         title:data.data[0].name,
                                         description: data.data[0].title,
-                                        musicUrl: data.url.values(0),
+                                        musicUrl: data.url.values()[0],
                                         hqMusicUrl: data.url.values(0),
                                         thumbMediaId: "jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_"
                                     }
