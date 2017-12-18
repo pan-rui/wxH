@@ -55,7 +55,7 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
             console.log(message.FromUserName + '===================取消了关注');
         } else {
             res.reply({
-                content: '你在干嘛呢!',
+                content: '你在干嘛呢!😉',
                 type: 'text'
             });
             // 回复高富帅(图文回复)
@@ -69,24 +69,28 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                         ]);*/
         }
     } else {
+        try {
         let strArry = message.Content.split(/[:：]/);
         if (strArry.length > 1) {
-            if (strArry[0] == '歌'){
-                tes.getResult('http://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.center&searchid=37602803789127241&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p=1&n=20&w='+encodeURIComponent(strArry[1])+'&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
-                    (result)=>{
-                        let data = JSON.parse(result.body),music={};
-                        if(strArry[2])
-                            music=_.filter(data.data.song.list,(val,index,context)=>{return val.album.name.indexOf(strArry[2])>0;})[0];
-                        else{
+            if (strArry[0] == '歌') {
+                tes.getResult('http://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.center&searchid=37602803789127241&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p=1&n=20&w=' + encodeURIComponent(strArry[1]) + '&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
+                    (result) => {
+                        let data = JSON.parse(result.body), music = {};
+                        if (strArry[2])
+                            music = _.filter(data.data.song.list, (val, index, context) => {
+                                return val.singer[0].name.indexOf(strArry[2]) > 0;
+                            })[0];
+                        else {
                             music = data.data.song.list[0];
                         }
-                        tes.getResult('http://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?songmid='+music['mid']+'&tpl=yqq_song_detail&format=jsonp&callback=getOneSongInfoCallback&g_tk=5381&jsonpCallback=getOneSongInfoCallback&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
-                            (result)=>{
-                                let ind=result.body.indexOf('{'),data=JSON.parse(result.body.substring(ind,result.body.length-1));
+                        tes.getResult('http://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?songmid=' + music['mid'] + '&tpl=yqq_song_detail&format=jsonp&callback=getOneSongInfoCallback&g_tk=5381&jsonpCallback=getOneSongInfoCallback&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
+                            (result) => {
+                                let ind = result.body.indexOf('{'),
+                                    data = JSON.parse(result.body.substring(ind, result.body.length - 1));
                                 res.reply({
                                     type: "music",
                                     content: {
-                                        title:data.data[0].name,
+                                        title: data.data[0].name,
                                         description: data.data[0].title,
                                         musicUrl: _.values(data.url)[0],
                                         hqMusicUrl: _.values(data.url)[0],
@@ -96,10 +100,10 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                             })
                     })
             }
-        }else{
-            tes.getResult('http://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key='+encodeURIComponent(strArry[0])+'&bk_length=600',(data)=> {
+        } else {
+            tes.getResult('http://baike.baidu.com/api/openapi/BaikeLemmaCardApi?scope=103&format=json&appid=379020&bk_key=' + encodeURIComponent(strArry[0]) + '&bk_length=600', (data) => {
                 let result = JSON.parse(data.body);
-                if (result.image){
+                if (result.image) {
                     res.reply([
                         {
                             title: result.tite,
@@ -108,13 +112,19 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                             url: result.url
                         }
                     ])
-            }else{
+                } else {
                     res.reply({
-                        content:result.abstract,
-                        type:'text'
+                        content: result.abstract,
+                        type: 'text'
                     })
                 }
             });
+        }
+    }catch (e){
+            res.reply({
+                content: '你是在为难我吗?😴 ',
+                type: 'text'
+            })
         }
     }
 }))
