@@ -87,6 +87,7 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                                 content: '抱歉,没有找到你要的歌,歌名或歌手可能有误!, ',
                                 type: 'text'
                             });
+                            return;
                         }
                             tes.getResult('http://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?songmid=' + music['mid'] + '&tpl=yqq_song_detail&format=jsonp&callback=getOneSongInfoCallback&g_tk=5381&jsonpCallback=getOneSongInfoCallback&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
                                 (result) => {
