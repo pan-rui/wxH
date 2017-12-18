@@ -59,7 +59,7 @@ exports.dateFormat = function dateFormat(date, format) {
 exports.tes = function processData() {
     this.getResult(url57, function (data) {
         let $ = cheerio.load(data.body);
-        let li = $('div.news li').first();
+        let li = $('div.news li').eq(1);
         const date = li.find('span').first().text().replace('[', '').replace(']', '').trim();
         const href = li.find('a').first().attr('href');
         const text = li.find('a').first().text();
@@ -72,7 +72,7 @@ exports.tes = function processData() {
                         let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
                             b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
                         let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
-                        this.sendMail({html: html});
+                        // this.sendMail({html: html});
                         let articles = [];
                         articles[articles.length] = {
                             thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
@@ -82,10 +82,12 @@ exports.tes = function processData() {
                             digest: '市场本没有波动,做得人多了就有了波动!',
                             show_cover_pic: '0',
                         };
-                        [b1, b2, b3].forEach((val) => {
+                        let curIndex = 0;
+                        async.forEach([b1, b2, b3], (val, callback) => {
                             let text = val.prev().text(), src = val.find('img').first().attr('src');
-                            let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
-                            let imgUrl='';
+                            // let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
+                            let imgPath = currency[text.substr(3, 5)][0] + '.gif';
+                            let imgUrl = '';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => (api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
@@ -98,34 +100,41 @@ exports.tes = function processData() {
                                     next(err, result);
                                 }
                             }))], (err, rst) => {
+                                curIndex++;
                                 imgUrl = rst.url;
-                                console.log('得到的图片===='+imgUrl);
+                                console.log('得到的图片====' + imgUrl);
+                                let valText = $.html(val).replace(src, imgUrl);
+                                articles[articles.length] = {
+                                    thumb_media_id: currency[text.substr(3, 5)][1],
+                                    author: '小潘',
+                                    title: text.substring(3).replace(/元 /g, '元'),
+                                    content: '<html><head></head><body>' + $.html(val.prev()) + '<br/>' + valText + '<br/>' + $.html(val.next()) + '</body></html>',
+                                    digest: '市场本没有波动,做得人多了就有了波动!',
+                                    show_cover_pic: '0',
+                                }
+                                if (curIndex == 3) callback();
                             });
-                            console.log('-------------------------->' + imgUrl);
-                            let valText = $.html(val).replace(src, imgUrl);
-                            articles[articles.length] = {
-                                thumb_media_id: currency[text.substr(3, 5)][1],
-                                author: '小潘',
-                                title: text.substring(3).replace(/元 /g, '元'),
-                                content: '<html><head></head><body>' + $.html(val.prev()) + '<br/>' + valText + '<br/>' + $.html(val.next()) + '</body></html>',
-                                digest: '市场本没有波动,做得人多了就有了波动!',
-                                show_cover_pic: '0',
+                        }, (err) => {
+                            // console.log(JSON.stringify(articles));
+                            if (err) {
+                                console.log(JSON.stringify(err));
+                                return;
                             }
-                        });
-                        // console.log(JSON.stringify(articles));
-                        api.uploadNews({articles: articles}, (err, result) => {
-                            console.log(JSON.stringify(result));
-                            api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
-                                console.log(JSON.stringify(re));
+                            api.uploadNews({articles: articles}, (err, result) => {
+                                console.log(JSON.stringify(result));
+                                api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
+                                    console.log(JSON.stringify(re));
+                                });
+                                /*                                api.massSendNews(result.media_id,true,(er,re)=>{
+                                                                    console.log(JSON.stringify(re));
+                                                                })*/
+                                //TODO:邮件,微信群发,存库.
+                                redis.setAsync(date, '1', 'EX', 28800).then((r) => {
+                                    // redis.getAsync(date).then((rr) => {console.log(rr)})
+                                    console.log("今日数据已处理.")
+                                });
                             });
-                            /*                                api.massSendNews(result.media_id,true,(er,re)=>{
-                                                                console.log(JSON.stringify(re));
-                                                            })*/
-                        });
-                        //TODO:邮件,微信群发,存库.
-                        redis.setAsync(date, '1', 'EX', 28800).then((r) => {
-                            // redis.getAsync(date).then((rr) => {console.log(rr)})
-                            console.log("今日数据已处理.")
+
                         });
                     });
                 }
@@ -174,7 +183,7 @@ exports.downImg = function downImg(url, path, callback) {
                     return;
                 }
                 // console.log('down success');
-                callback(err1,path);
+                callback(err, path);
             });
         });
     });
