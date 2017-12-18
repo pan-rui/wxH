@@ -69,7 +69,6 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                         ]);*/
         }
     } else {
-        try {
         let strArry = message.Content.split(/[:：]/);
         if (strArry.length > 1) {
             if (strArry[0] == '歌') {
@@ -83,21 +82,29 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                         else {
                             music = data.data.song.list[0];
                         }
-                        tes.getResult('http://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?songmid=' + music['mid'] + '&tpl=yqq_song_detail&format=jsonp&callback=getOneSongInfoCallback&g_tk=5381&jsonpCallback=getOneSongInfoCallback&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
-                            (result) => {
-                                let ind = result.body.indexOf('{'),
-                                    data = JSON.parse(result.body.substring(ind, result.body.length - 1));
-                                res.reply({
-                                    type: "music",
-                                    content: {
-                                        title: data.data[0].name,
-                                        description: data.data[0].title,
-                                        musicUrl: _.values(data.url)[0],
-                                        hqMusicUrl: _.values(data.url)[0],
-                                        thumbMediaId: "jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_"
-                                    }
-                                });
+                        console.log(JSON.stringify(music))
+                        try {
+                            tes.getResult('http://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?songmid=' + music['mid'] + '&tpl=yqq_song_detail&format=jsonp&callback=getOneSongInfoCallback&g_tk=5381&jsonpCallback=getOneSongInfoCallback&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
+                                (result) => {
+                                    let ind = result.body.indexOf('{'),
+                                        data = JSON.parse(result.body.substring(ind, result.body.length - 1));
+                                    res.reply({
+                                        type: "music",
+                                        content: {
+                                            title: data.data[0].name,
+                                            description: data.data[0].title,
+                                            musicUrl: _.values(data.url)[0],
+                                            hqMusicUrl: _.values(data.url)[0],
+                                            thumbMediaId: "jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_"
+                                        }
+                                    });
+                                })
+                        } catch (e) {
+                            res.reply({
+                                content: '你是在为难我吗?😴 ',
+                                type: 'text'
                             })
+                        }
                     })
             }
         } else {
@@ -119,12 +126,6 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                     })
                 }
             });
-        }
-    }catch (e){
-            res.reply({
-                content: '你是在为难我吗?😴 ',
-                type: 'text'
-            })
         }
     }
 }))
