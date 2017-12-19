@@ -78,7 +78,9 @@ exports.downFX = function downFX() {
                         let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
                             b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
                         let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
-                        this.sendMail({html: html});
+                        try{this.sendMail({html: html});}catch(e){
+                            console.log('邮件发送失败'+e)
+                        }
                         let articles = [];
                         /*                        articles[articles.length] = {
                                                     thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
@@ -120,11 +122,13 @@ exports.downFX = function downFX() {
                                 console.log(JSON.stringify(err));
                                 return;
                             }
-                            let inter = 0;
+                            let inter = 0,flag=0;
                             inter = setInterval(function () {
                                 redis.getAsync('articles').then((resss) => {
-                                    if (resss && resss.length > 5)
+                                    if (flag==0 && resss && resss.length > 5) {
                                         articles = _.union(JSON.parse(resss), articles);
+                                        flag=1;
+                                    }
                                     redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                         redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
                                             // redis.getAsync(date).then((rr) => {console.log(rr)})
@@ -226,7 +230,7 @@ exports.downZhai = function downZhai() {
                                     title: text,
                                     content: '<html><head></head><body>' + '<br/>' + aStr + '</body></html>',
                                     digest: '市场本没有波动,做得人多了就有了波动!',
-                                    show_cover_pic: '0',
+                                    show_cover_pic: '1',
                                 }
                                 redis.getAsync('articles').then((resss) => {
                                     if (resss)
@@ -246,9 +250,10 @@ exports.downZhai = function downZhai() {
                                 title: text.split('—')[1],
                                 content: '<html><head></head><body>' + '<br/>' + aStr + '</body></html>',
                                 digest: '市场本没有波动,做得人多了就有了波动!',
-                                show_cover_pic: '0',
+                                show_cover_pic: '1',
                             }
                             redis.getAsync('articles').then((resss) => {
+                                console.log(resss);
                                 if (resss && resss.length > 5)
                                     articles = _.union(JSON.parse(resss), articles);
                                 redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
