@@ -120,6 +120,7 @@ exports.downFX = function downFX() {
                                 console.log(JSON.stringify(err));
                                 return;
                             }
+                            console.log('外汇PUSH');
                             redis.getAsync('articles').then((resss) => {
                                 if (resss&&resss.length>5)
                                     articles = _.union(JSON.parse(resss), articles);
