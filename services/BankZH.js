@@ -22,8 +22,8 @@ const currency = {
     '英镑/美元': ['GBP', '49h_kjEbutnJ6ztRuRdb1X8pW9xq0Qb5-TSyY1Ey6H6ZJRNc4Yu_ZlCzfCPlVklZ'],
     '美元/日元': ['JPY', 'yRlO9WW6bw3Sc1REHScknP2rDOjCjj_VUKC0NnVYOdGyGrAflQpMfjpY7ncQoELn'],
     '美元/加元': ['CAD', 'It1Tyjdyl9WCCpalcIBc0B99a7lPlhGcNFCrDdqvHZ79TKa0m2GQQ8iTWNnZKeaj'],
-    '黄金':['XAU','UzdmTQXLyOuUIsZNdanXncXcHO_1y6Seoa_IsKUZVtf9ZSeKCJxhiGRvv8nMTD4c'],
-    '债市':['Zhai','0AbEH3ZQNELS5MZdYs0XDaaG5BCakDgPE5hImK-iuMUfJnCdQAWEv2adsKS-mWOH']
+    '黄金': ['XAU', 'UzdmTQXLyOuUIsZNdanXncXcHO_1y6Seoa_IsKUZVtf9ZSeKCJxhiGRvv8nMTD4c'],
+    '债市': ['Zhai', '0AbEH3ZQNELS5MZdYs0XDaaG5BCakDgPE5hImK-iuMUfJnCdQAWEv2adsKS-mWOH']
 };
 exports.getResult = function getResult(url, callback) {
     http.get(url, (res) => {
@@ -120,17 +120,20 @@ exports.downFX = function downFX() {
                                 console.log(JSON.stringify(err));
                                 return;
                             }
-                            console.log('外汇PUSH');
-                            redis.getAsync('articles').then((resss) => {
-                                if (resss&&resss.length>5)
-                                    articles = _.union(JSON.parse(resss), articles);
-                                redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
-                                    redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
-                                        // redis.getAsync(date).then((rr) => {console.log(rr)})
-                                        console.log(redisKey + '====已处理')
-                                    });
+                            let inter = 0;
+                            inter = setInterval(function () {
+                                redis.getAsync('articles').then((resss) => {
+                                    if (resss && resss.length > 5)
+                                        articles = _.union(JSON.parse(resss), articles);
+                                    redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
+                                        redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
+                                            // redis.getAsync(date).then((rr) => {console.log(rr)})
+                                            console.log(redisKey + '====已处理')
+                                        });
+                                    })
                                 })
-                            })
+                                clearInterval(inter);
+                            }, 500)
                         });
                     });
                 }
@@ -199,15 +202,16 @@ exports.downZhai = function downZhai() {
                     this.getResult(url59 + href.substr(2), (da2) => {
                         let _$ = cheerio.load(da2.body);
                         let contents = _$('div.sub_con > p');
-                        contents=_.initial(_.rest(contents));
+                        contents = _.initial(_.rest(contents));
                         let articles = [];
-                        let aStr='';
-                        _.each(contents,(el,i,list)=>{
+                        let aStr = '';
+                        _.each(contents, (el, i, list) => {
                             aStr += $.html(el);
                         })
                         let reg = /src="([^"]+)/;
-                        if(reg.test(aStr)){
-                            let src = RegExp.$1,imgPath='/opt/html/images/' + currency[text.substr(0, 2)][0] + '.gif';
+                        if (reg.test(aStr)) {
+                            let src = RegExp.$1,
+                                imgPath = '/opt/html/images/' + currency[text.substr(0, 2)][0] + '.gif';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
@@ -235,7 +239,7 @@ exports.downZhai = function downZhai() {
                                     })
                                 })
                             });
-                        }else{
+                        } else {
                             articles[articles.length] = {
                                 thumb_media_id: currency['债市'][1],
                                 author: '小潘',
@@ -245,7 +249,7 @@ exports.downZhai = function downZhai() {
                                 show_cover_pic: '0',
                             }
                             redis.getAsync('articles').then((resss) => {
-                                if (resss&&resss.length>5)
+                                if (resss && resss.length > 5)
                                     articles = _.union(JSON.parse(resss), articles);
                                 redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                     redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
@@ -275,15 +279,15 @@ exports.downGold = function downGold() {
                     this.getResult(url58 + href.substr(2), (da2) => {
                         let _$ = cheerio.load(da2.body);
                         let contents = _$('div.sub_con > p');
-                        contents=_.initial(_.rest(contents));
+                        contents = _.initial(_.rest(contents));
                         let articles = [];
-                        let aStr='';
-                        _.each(contents,(el,i,list)=>{
+                        let aStr = '';
+                        _.each(contents, (el, i, list) => {
                             aStr += $.html(el);
                         })
                         let reg = /src="([^"]+)/;
-                        if(reg.test(aStr)){
-                            let src = RegExp.$1,imgPath='/opt/html/images/' + currency['黄金'][0] + '.gif';
+                        if (reg.test(aStr)) {
+                            let src = RegExp.$1, imgPath = '/opt/html/images/' + currency['黄金'][0] + '.gif';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
@@ -311,7 +315,7 @@ exports.downGold = function downGold() {
                                     })
                                 })
                             });
-                        }else{
+                        } else {
                             articles[articles.length] = {
                                 thumb_media_id: currency['黄金'][1],
                                 author: '小潘',
@@ -321,7 +325,7 @@ exports.downGold = function downGold() {
                                 show_cover_pic: '0',
                             }
                             redis.getAsync('articles').then((resss) => {
-                                if (resss&&resss.length>5)
+                                if (resss && resss.length > 5)
                                     articles = _.union(JSON.parse(resss), articles);
                                 redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                     redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
@@ -345,17 +349,16 @@ exports.sendNews = function sendNews() {
     redis.getAsync(date).then((ress) => {
         if (!ress || ress != '1') {
             redis.getAsync('articles').then((res) => {
-                console.log(res);
                 let articles = res ? JSON.parse(res) : [];
                 if (articles.length < 5) return;
                 api.uploadNews({articles: articles}, (err, result) => {
                     console.log(JSON.stringify(result));
-                                                        api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
-                                                            console.log(JSON.stringify(re));
-                                                        });
-/*                    api.massSendNews(result.media_id, true, (er, re) => {
+                    api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
                         console.log(JSON.stringify(re));
-                    })*/
+                    });
+                    /*                    api.massSendNews(result.media_id, true, (er, re) => {
+                                            console.log(JSON.stringify(re));
+                                        })*/
                     //TODO:邮件,微信群发,存库.
                     redis.setAsync(date, '1', 'EX', 28800).then((r) => {
                         // redis.getAsync(date).then((rr) => {console.log(rr)})
