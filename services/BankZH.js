@@ -92,11 +92,10 @@ exports.downFX = function downFX() {
                                                 };*/
                         let arry = [b1, b2, b3], curIndex = 0;
                         async.forEach(arry, (val, callback) => {
-                            let call = callback;
                             let text = val.prev().text(), src = val.find('img').first().attr('src');
                             let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
                             // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
-                            let imgUrl = '';
+                            // let imgUrl = '';
                             curIndex++;
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
@@ -105,8 +104,8 @@ exports.downFX = function downFX() {
                                     next(err, result);
                                 }
                             })], (err, rst) => {
-                                imgUrl = rst.url;
-                                let valText = $.html(val).replace(src, imgUrl);
+                                // imgUrl = rst.url;
+                                let valText = $.html(val).replace(src, rst.url);
                                 articles[articles.length] = {
                                     thumb_media_id: currency[text.substr(3, 5)][1],
                                     author: '小潘',
@@ -124,19 +123,21 @@ exports.downFX = function downFX() {
                             }
                             let inter = 0,flag=0;
                             inter = setInterval(function () {
-                                redis.getAsync('articles').then((resss) => {
-                                    if (flag==0 && resss && resss.length > 5) {
-                                        articles = _.union(JSON.parse(resss), articles);
-                                        flag=1;
-                                    }
-                                    redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
-                                        redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
-                                            // redis.getAsync(date).then((rr) => {console.log(rr)})
-                                            console.log(redisKey + '====已处理')
-                                        });
+                                if(articles.length==3) {
+                                    redis.getAsync('articles').then((resss) => {
+                                        if (flag == 0 && resss && resss.length > 5) {
+                                            articles = _.union(JSON.parse(resss), articles);
+                                            flag = 1;
+                                        }
+                                        redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
+                                            redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
+                                                // redis.getAsync(date).then((rr) => {console.log(rr)})
+                                                console.log(redisKey + '====已处理')
+                                            });
+                                        })
                                     })
-                                })
-                                clearInterval(inter);
+                                    clearInterval(inter);
+                                }
                             }, 500)
                         });
                     });
