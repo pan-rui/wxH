@@ -92,8 +92,8 @@ exports.downFX = function downFX() {
                         async.forEach(arry, (val, callback) => {
                             let call = callback;
                             let text = val.prev().text(), src = val.find('img').first().attr('src');
-                            // let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
-                            let imgPath = currency[text.substr(3, 5)][0] + '.gif';
+                            let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
+                            // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
                             let imgUrl = '';
                             curIndex++;
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
@@ -206,7 +206,7 @@ exports.downZhai = function downZhai() {
                         })
                         let reg = /src="([^"]+)/;
                         if(reg.test(aStr)){
-                            let imgPath = RegExp.$1;
+                            let src = RegExp.$1,imgPath='/opt/html/images/' + currency[text.substr(0, 2)][0] + '.gif';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
@@ -218,7 +218,7 @@ exports.downZhai = function downZhai() {
                                 articles[articles.length] = {
                                     thumb_media_id: currency['黄金'][1],
                                     author: '小潘',
-                                    title: text.split('—')[1],
+                                    title: text,
                                     content: '<html><head></head><body>' + '<br/>' + aStr + '</body></html>',
                                     digest: '市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic: '0',
@@ -282,7 +282,7 @@ exports.downGold = function downGold() {
                         })
                         let reg = /src="([^"]+)/;
                         if(reg.test(aStr)){
-                            let imgPath = RegExp.$1;
+                            let src = RegExp.$1,imgPath='/opt/html/images/' + currency['黄金'][0] + '.gif';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
