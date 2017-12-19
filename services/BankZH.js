@@ -205,7 +205,7 @@ exports.downZhai = function downZhai() {
                 if (!ress || ress != '1') {
                     this.getResult(url59 + href.substr(2), (da2) => {
                         let _$ = cheerio.load(da2.body);
-                        let contents = _$('div.sub_con > p');
+                        let contents = _$('div.sub_con > p,table');
                         contents = _.initial(_.rest(contents));
                         let articles = [];
                         let aStr = '';
@@ -253,7 +253,6 @@ exports.downZhai = function downZhai() {
                                 show_cover_pic: '1',
                             }
                             redis.getAsync('articles').then((resss) => {
-                                console.log(resss);
                                 if (resss && resss.length > 5)
                                     articles = _.union(JSON.parse(resss), articles);
                                 redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
@@ -354,6 +353,7 @@ exports.sendNews = function sendNews() {
     redis.getAsync(date).then((ress) => {
         if (!ress || ress != '1') {
             redis.getAsync('articles').then((res) => {
+                console.log(resss);
                 let articles = res ? JSON.parse(res) : [];
                 if (articles.length < 5) return;
                 api.uploadNews({articles: articles}, (err, result) => {
