@@ -54,9 +54,9 @@ app.use(function(err, req, res, next) {
 /*var date=new Date();
 let rule1= new schedule.RecurrenceRule();
 rule1.minute = [1, 11, 21, 31, 41, 51];*/
-schedule.scheduleJob('1 */1 14-22 * * 1-5',function(){tes.downGold()});
-schedule.scheduleJob('21 */1 14-22 * * 1-5',function(){tes.downZhai()});
-schedule.scheduleJob('41 */1 14-22 * * 1-5',function(){tes.downFX()});
-schedule.scheduleJob('1 * 14-22 * * 1-5',function(){tes.sendNews()});
+schedule.scheduleJob('1 */10 14-19 * * 1-5',function(){tes.downGold()});
+schedule.scheduleJob('21 */10 14-19 * * 1-5',function(){tes.downZhai()});
+schedule.scheduleJob('41 */10 14-19 * * 1-5',function(){tes.downFX()});
+schedule.scheduleJob('1 * 14-19 * * 1-5',function(){tes.sendNews()});
 
 module.exports = app;

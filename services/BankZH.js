@@ -77,8 +77,8 @@ exports.downFX = function downFX() {
                         let _$ = cheerio.load(da2.body);
                         let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
                             b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
-                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
-/*                        try{this.sendMail({html: html});}catch(e){
+/*                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
+                        try{this.sendMail({html: html});}catch(e){
                             console.log('邮件发送失败'+e)
                         }*/
                         let articles = [];
@@ -292,7 +292,6 @@ exports.downGold = function downGold() {
                         })
                         let reg = /src="([^"]+)/;
                         if (reg.test(aStr)) {
-                            console.log('黄金有图=========');
                             let src = RegExp.$1, imgPath = '/opt/html/images/' + currency['黄金'][0] + '.gif';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
@@ -301,7 +300,7 @@ exports.downGold = function downGold() {
                                     next(err, result);
                                 }
                             })], (err, rst) => {
-                                aStr.replace(reg, 'src="'+rst.url);
+                                aStr=aStr.replace(src, rst.url);
                                 articles[articles.length] = {
                                     thumb_media_id: currency['黄金'][1],
                                     author: '小潘',
@@ -322,7 +321,6 @@ exports.downGold = function downGold() {
                                 })
                             });
                         } else {
-                            console.log('黄金没图============')
                             articles[articles.length] = {
                                 thumb_media_id: currency['黄金'][1],
                                 author: '小潘',
@@ -356,17 +354,16 @@ exports.sendNews = function sendNews() {
     redis.getAsync(date).then((ress) => {
         if (!ress || ress != '1') {
             redis.getAsync('articles').then((res) => {
-                console.log(res);
                 let articles = res ? JSON.parse(res) : [];
                 if (articles.length < 5) return;
                 api.uploadNews({articles: articles}, (err, result) => {
                     console.log(JSON.stringify(result));
-                    api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
+/*                    api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
                         console.log(JSON.stringify(re));
-                    });
-                    /*                    api.massSendNews(result.media_id, true, (er, re) => {
-                                            console.log(JSON.stringify(re));
-                                        })*/
+                    });*/
+                    api.massSendNews(result.media_id, true, (er, re) => {
+                        console.log(JSON.stringify(re));
+                    })
                     //TODO:邮件,微信群发,存库.
                     redis.setAsync(date, '1', 'EX', 28800).then((r) => {
                         // redis.getAsync(date).then((rr) => {console.log(rr)})
