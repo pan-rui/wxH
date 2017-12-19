@@ -96,16 +96,25 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
                                         data = JSON.parse(result.body.substring(ind, result.body.length - 1));
                                     if(data.data[0].file) {
                                         let url=baseUrl.replace(/media_mid=([^&]+)/,'media_mid='+data.data[0].file.media_mid).replace(/songmid=([^&]+)/,'songmid='+data.data[0].mid);
-                                        res.reply({
+                                        console.log('=============' + url);
+                                        console.log('=============' + baseUrl.replace(/media_mid=([^&]+)/,'&media_mid='+data.data[0].file.media_mid).replace(/songmid=([^&]+)/,'&songmid='+data.data[0].mid));
+/*                                        res.reply({
                                             type: "music",
                                             content: {
                                                 title: data.data[0].name,
                                                 description: data.data[0].title,
-                                                musicUrl:encodeURIComponent(url) ,
-                                                hqMusicUrl: encodeURIComponent(url),
+                                                musicUrl:url ,
+                                                hqMusicUrl: url,
                                                 thumbMediaId: "jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_"
                                             }
-                                        });
+                                        });*/
+                                        res.reply({
+                                            content: {
+                                                title: data.data[0].name,
+                                                mediaId: data.data[0].file.media_mid
+                                            },
+                                            type: 'music'
+                                        })
                                     }else{
                                         res.reply({
                                             content: '你是在为难我吗?😴 ',
