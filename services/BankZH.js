@@ -123,7 +123,7 @@ exports.downFX = function downFX() {
                             }
                             let inter = 0,flag=0;
                             inter = setInterval(function () {
-                                if(articles.length==3) {
+                                if(articles.length==arry.length) {
                                     redis.getAsync('articles').then((resss) => {
                                         if (flag == 0 && resss && resss.length > 5) {
                                             articles = _.union(JSON.parse(resss), articles);
@@ -248,7 +248,7 @@ exports.downZhai = function downZhai() {
                             articles[articles.length] = {
                                 thumb_media_id: currency['债市'][1],
                                 author: '小潘',
-                                title: text.split('—')[1],
+                                title: text,
                                 content: '<html><head></head><body>' + '<br/>' + aStr + '</body></html>',
                                 digest: '市场本没有波动,做得人多了就有了波动!',
                                 show_cover_pic: '1',
@@ -292,6 +292,7 @@ exports.downGold = function downGold() {
                         })
                         let reg = /src="([^"]+)/;
                         if (reg.test(aStr)) {
+                            console.log('黄金有图=========');
                             let src = RegExp.$1, imgPath = '/opt/html/images/' + currency['黄金'][0] + '.gif';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
@@ -300,7 +301,7 @@ exports.downGold = function downGold() {
                                     next(err, result);
                                 }
                             })], (err, rst) => {
-                                aStr.replace(reg, rst.url);
+                                aStr.replace(reg, 'src="'+rst.url);
                                 articles[articles.length] = {
                                     thumb_media_id: currency['黄金'][1],
                                     author: '小潘',
@@ -321,6 +322,7 @@ exports.downGold = function downGold() {
                                 })
                             });
                         } else {
+                            console.log('黄金没图============')
                             articles[articles.length] = {
                                 thumb_media_id: currency['黄金'][1],
                                 author: '小潘',
