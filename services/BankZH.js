@@ -121,9 +121,9 @@ exports.downFX = function downFX() {
                                 return;
                             }
                             redis.getAsync('articles').then((resss) => {
-                                if (resss)
+                                if (resss&&resss.length>5)
                                     articles = _.union(JSON.parse(resss), articles);
-                                redis.setAsync('articles', articles, 'EX', 28800).then((rr) => {
+                                redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                     redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
                                         // redis.getAsync(date).then((rr) => {console.log(rr)})
                                         console.log(redisKey + '====已处理')
@@ -201,11 +201,11 @@ exports.downZhai = function downZhai() {
                         contents=_.initial(_.rest(contents));
                         let articles = [];
                         let aStr='';
-                        contents.each((i,el)=>{
+                        _.each(contents,(el,i,list)=>{
                             aStr += $.html(el);
                         })
                         let reg = /src="([^"]+)/;
-                        if(reg.test()){
+                        if(reg.test(aStr)){
                             let imgPath = RegExp.$1;
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
@@ -244,9 +244,9 @@ exports.downZhai = function downZhai() {
                                 show_cover_pic: '0',
                             }
                             redis.getAsync('articles').then((resss) => {
-                                if (resss)
+                                if (resss&&resss.length>5)
                                     articles = _.union(JSON.parse(resss), articles);
-                                redis.setAsync('articles', articles, 'EX', 28800).then((rr) => {
+                                redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                     redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
                                         // redis.getAsync(date).then((rr) => {console.log(rr)})
                                         console.log(redisKey + '====已处理')
@@ -277,11 +277,11 @@ exports.downGold = function downGold() {
                         contents=_.initial(_.rest(contents));
                         let articles = [];
                         let aStr='';
-                        contents.each((i,el)=>{
+                        _.each(contents,(el,i,list)=>{
                             aStr += $.html(el);
                         })
                         let reg = /src="([^"]+)/;
-                        if(reg.test()){
+                        if(reg.test(aStr)){
                             let imgPath = RegExp.$1;
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
@@ -302,7 +302,7 @@ exports.downGold = function downGold() {
                                 redis.getAsync('articles').then((resss) => {
                                     if (resss)
                                         articles = _.union(JSON.parse(resss), articles);
-                                    redis.setAsync('articles', articles, 'EX', 28800).then((rr) => {
+                                    redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                         redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
                                             // redis.getAsync(date).then((rr) => {console.log(rr)})
                                             console.log(redisKey + '====已处理')
@@ -320,9 +320,9 @@ exports.downGold = function downGold() {
                                 show_cover_pic: '0',
                             }
                             redis.getAsync('articles').then((resss) => {
-                                if (resss)
+                                if (resss&&resss.length>5)
                                     articles = _.union(JSON.parse(resss), articles);
-                                redis.setAsync('articles', articles, 'EX', 28800).then((rr) => {
+                                redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                     redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
                                         // redis.getAsync(date).then((rr) => {console.log(rr)})
                                         console.log(redisKey + '====已处理')
