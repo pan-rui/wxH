@@ -73,7 +73,6 @@ router.post('/msg', wechat(wxConfig, function (req, res, next) {
         if (strArry.length > 1) {
             if (strArry[0] == '歌') {
                 let baseUrl='https://i.y.qq.com/v8/playsong.html?hostuin=79277490&songid=&songmid=002TpsfX2SA49N&type=0&platform=1&appsongtype=1&_wv=1&source=qq&appshare=iphone&media_mid=002TpsfX2SA49N';
-                let baseUrl='https://i.y.qq.com/v8/playsong.html?hostuin=79277490songid=songmid=001qXhio4NvRTbtype=0platform=1appsongtype=1_wv=1source=qqappshare=iphonemedia_mid=001qXhio4NvRTb';
                 tes.getResult('http://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.center&searchid=37602803789127241&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p=1&n=20&w=' + encodeURIComponent(strArry[1]) + '&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0',
                     (result) => {
                         let data = JSON.parse(result.body), music = {};
