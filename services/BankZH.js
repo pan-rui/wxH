@@ -78,9 +78,9 @@ exports.downFX = function downFX() {
                         let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
                             b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
                         let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
-                        try{this.sendMail({html: html});}catch(e){
+/*                        try{this.sendMail({html: html});}catch(e){
                             console.log('邮件发送失败'+e)
-                        }
+                        }*/
                         let articles = [];
                         /*                        articles[articles.length] = {
                                                     thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
@@ -353,7 +353,7 @@ exports.sendNews = function sendNews() {
     redis.getAsync(date).then((ress) => {
         if (!ress || ress != '1') {
             redis.getAsync('articles').then((res) => {
-                console.log(resss);
+                console.log(res);
                 let articles = res ? JSON.parse(res) : [];
                 if (articles.length < 5) return;
                 api.uploadNews({articles: articles}, (err, result) => {
