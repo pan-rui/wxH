@@ -93,7 +93,7 @@ exports.downFX = function downFX() {
                         let arry = [b1, b2, b3], curIndex = 0;
                         async.forEach(arry, (val, callback) => {
                             let text = val.prev().text(), src = val.find('img').first().attr('src');
-                            let imgPath = '/opt/html/images/' + currency[text.substr(3, 5)][0] + '.gif';
+                            let imgPath = '/opt/html/GIF/' + currency[text.substr(3, 5)][0] + '.gif';
                             // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
                             // let imgUrl = '';
                             curIndex++;
@@ -218,7 +218,7 @@ exports.downZhai = function downZhai() {
                         let reg = /src="([^"]+)/;
                         if (reg.test(aStr)) {
                             let src = RegExp.$1,
-                                imgPath = '/opt/html/images/' + currency[text.substr(0, 2)][0] + '.gif';
+                                imgPath = '/opt/html/GIF/' + currency[text.substr(0, 2)][0] + '.gif';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
@@ -298,7 +298,7 @@ exports.downGold = function downGold() {
                         })
                         let reg = /src="([^"]+)/;
                         if (reg.test(aStr)) {
-                            let src = RegExp.$1, imgPath = '/opt/html/images/' + currency['黄金'][0] + '.gif';
+                            let src = RegExp.$1, imgPath = '/opt/html/GIF/' + currency['黄金'][0] + '.gif';
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
@@ -329,14 +329,16 @@ exports.downGold = function downGold() {
                                 })
                             });
                         } else {
-                            articles[articles.length] = {
-                                thumb_media_id: currency['黄金'][1],
-                                author: '小潘',
-                                title: text.split('—')[1],
-                                content: '<html><head></head><body>' + '<br/>' + aStr + wxConfig.bottomHtml + '</body></html>',
-                                digest: '市场本没有波动,做得人多了就有了波动!',
-                                show_cover_pic: '0',
-                            }
+                            redis.getAsync(currency['黄金'][0]).then((res) => {
+                                articles[articles.length] = {
+                                    thumb_media_id: res,
+                                    author: '小潘',
+                                    title: text.split('—')[1],
+                                    content: '<html><head></head><body>' + '<br/>' + aStr + wxConfig.bottomHtml + '</body></html>',
+                                    digest: '市场本没有波动,做得人多了就有了波动!',
+                                    show_cover_pic: '0',
+                                }
+                            });
                             redis.getAsync('articles').then((resss) => {
                                 if (resss && resss.length > 5)
                                     articles = _.union(JSON.parse(resss), articles);
@@ -364,7 +366,6 @@ exports.sendNews = function sendNews() {
             redis.getAsync('articles').then((res) => {
                 let articles = res ? JSON.parse(res) : [];
                 if (articles.length < 5) return;
-                console.log(JSON.stringify(articles));
                 api.uploadNews({articles: articles}, (err, result) => {
                     console.log(JSON.stringify(result));
                     /*                    api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
