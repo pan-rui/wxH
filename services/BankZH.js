@@ -355,7 +355,7 @@ exports.sendNews = function sendNews() {
         if (!ress || ress != '1') {
             redis.getAsync('articles').then((res) => {
                 let articles = res ? JSON.parse(res) : [];
-                if (articles.length < 5) return;
+                if (articles.length < 1) return;
                 console.log(JSON.stringify(articles));
                 api.uploadNews({articles: articles}, (err, result) => {
                     console.log(JSON.stringify(result));
