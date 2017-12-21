@@ -9,7 +9,7 @@ var tes = require('../services/BankZH');
 const firstIn = {video: 'cvmBAMM_C1js-uiw3FKfAgUjA25AJ_9QvCmtlr9mdODm9s234Xs6WcB8Tq-lusgT'}
 var api = new WechatAPI(wxConfig.appid, wxConfig.appSecret);
 router.get('/', function (req, res, next) {
-    tes.tes();
+    tes.sendNews();
     res.send('hello haha!');
 });
 /* GET home page. */

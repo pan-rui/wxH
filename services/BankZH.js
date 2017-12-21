@@ -356,6 +356,7 @@ exports.sendNews = function sendNews() {
             redis.getAsync('articles').then((res) => {
                 let articles = res ? JSON.parse(res) : [];
                 if (articles.length < 5) return;
+                console.log(JSON.stringify(articles));
                 api.uploadNews({articles: articles}, (err, result) => {
                     console.log(JSON.stringify(result));
 /*                    api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
