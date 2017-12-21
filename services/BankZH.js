@@ -387,7 +387,7 @@ exports.sendNews = function sendNews() {
 }
 
 exports.uploadImg = function uploadImg() {
-    _each(currency, (val, key, list) => {
+    _.each(currency, (val, key, list) => {
         redis.getAsync(val[0]).then((res) => {
             if (!res) {
                 api.uploadMedia(val[1], 'thumb', (err, result) => {
