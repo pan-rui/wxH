@@ -17,6 +17,7 @@ router.get('/msg', function (req, res, next) {
     wxConfig.wxVerify(req, res, wxConfig.token);
 });
 router.post('/msg', wechat(wxConfig, function (req, res, next) {
+    console.log('接收时间===>'+new Date());
     // 微信输入信息都在req.weixin上
     var message = req.weixin;
     /*    if (message.FromUserName === 'diaosi') {

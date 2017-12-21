@@ -110,7 +110,7 @@ exports.downFX = function downFX() {
                                     thumb_media_id: currency[text.substr(3, 5)][1],
                                     author: '小潘',
                                     title: text.substring(3).replace(/元 /g, '元'),
-                                    content: '<html><head></head><body>' + '<br/>' + valText + '<br/>' + $.html(val.next()) + '</body></html>',
+                                    content: '<html><head></head><body>' + '<br/>' + valText + '<br/>' + $.html(val.next()) +wxConfig.bottomHtml+ '</body></html>',
                                     digest: '市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic: '0',
                                 }
@@ -226,10 +226,10 @@ exports.downZhai = function downZhai() {
                             })], (err, rst) => {
                                 aStr.replace(reg, rst.url);
                                 articles[articles.length] = {
-                                    thumb_media_id: currency['黄金'][1],
+                                    thumb_media_id: currency['债市'][1],
                                     author: '小潘',
                                     title: text,
-                                    content: '<html><head></head><body>' + '<br/>' + aStr + '</body></html>',
+                                    content: '<html><head></head><body>' + '<br/>' + aStr +wxConfig.bottomHtml+ '</body></html>',
                                     digest: '市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic: '1',
                                 }
@@ -249,7 +249,7 @@ exports.downZhai = function downZhai() {
                                 thumb_media_id: currency['债市'][1],
                                 author: '小潘',
                                 title: text,
-                                content: '<html><head></head><body>' + '<br/>' + aStr + '</body></html>',
+                                content: '<html><head></head><body>' + '<br/>' + aStr +wxConfig.bottomHtml+ '</body></html>',
                                 digest: '市场本没有波动,做得人多了就有了波动!',
                                 show_cover_pic: '1',
                             }
@@ -305,7 +305,7 @@ exports.downGold = function downGold() {
                                     thumb_media_id: currency['黄金'][1],
                                     author: '小潘',
                                     title: text.split('—')[1],
-                                    content: '<html><head></head><body>' + '<br/>' + aStr + '</body></html>',
+                                    content: '<html><head></head><body>' + '<br/>' + aStr + wxConfig.bottomHtml+'</body></html>',
                                     digest: '市场本没有波动,做得人多了就有了波动!',
                                     show_cover_pic: '0',
                                 }
@@ -325,7 +325,7 @@ exports.downGold = function downGold() {
                                 thumb_media_id: currency['黄金'][1],
                                 author: '小潘',
                                 title: text.split('—')[1],
-                                content: '<html><head></head><body>' + '<br/>' + aStr + '</body></html>',
+                                content: '<html><head></head><body>' + '<br/>' + aStr +wxConfig.bottomHtml+ '</body></html>',
                                 digest: '市场本没有波动,做得人多了就有了波动!',
                                 show_cover_pic: '0',
                             }
