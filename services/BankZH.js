@@ -85,7 +85,7 @@ exports.downFX = function downFX() {
                         let articles = [],textArr=[],tex='';
                         texts = _.initial(_.rest(texts));
                         _.each(contents, (el, i, list) => {
-                            if($.text(el).startsWith('货币')){
+                            if($(el).text().startsWith('货币')){
                                 if(tex!='') textArr[textArr.length]=tex;
                                 tex='';
                             }else{
