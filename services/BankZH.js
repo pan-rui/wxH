@@ -17,13 +17,13 @@ const url58 = 'http://www.boc.cn/fimarkets/fm7/';
 const url59 = 'http://www.boc.cn/fimarkets/boud/';
 const api = new wechatApi(wxConfig.appid, wxConfig.appSecret);
 const currency = {
-    '澳元/美元': ['AUD', 'ct-qkOcG2Ig5Zv7aQ24STKOKJEpiXzP8nrKepsaR3WFmGQtE5oc8ab2emr4VLtx3'],
-    '欧元/美元': ['EUR', 'qxMdcC2a3YQ6avvNo7zKHe1mGd62zJ6awuQVWT00E4QpjuEgkDcgQqTxIjRz1law'],
-    '英镑/美元': ['GBP', '49h_kjEbutnJ6ztRuRdb1X8pW9xq0Qb5-TSyY1Ey6H6ZJRNc4Yu_ZlCzfCPlVklZ'],
-    '美元/日元': ['JPY', 'yRlO9WW6bw3Sc1REHScknP2rDOjCjj_VUKC0NnVYOdGyGrAflQpMfjpY7ncQoELn'],
-    '美元/加元': ['CAD', 'It1Tyjdyl9WCCpalcIBc0B99a7lPlhGcNFCrDdqvHZ79TKa0m2GQQ8iTWNnZKeaj'],
-    '黄金': ['XAU', 'UzdmTQXLyOuUIsZNdanXncXcHO_1y6Seoa_IsKUZVtf9ZSeKCJxhiGRvv8nMTD4c'],
-    '债市': ['Zhai', '0AbEH3ZQNELS5MZdYs0XDaaG5BCakDgPE5hImK-iuMUfJnCdQAWEv2adsKS-mWOH']
+    '澳元/美元': ['AUD', '/opt/html/images/AUD.jpg'],
+    '欧元/美元': ['EUR', '/opt/html/images/EUR.jpg'],
+    '英镑/美元': ['GBP', '/opt/html/images/GBP.jpg'],
+    '美元/日元': ['JPY', '/opt/html/images/JPY.jpg'],
+    '美元/加元': ['CAD', '/opt/html/images/CAD.jpg'],
+    '黄金': ['XAU', '/opt/html/images/XAU.jpg'],
+    '债市': ['Zhai', '/opt/html/images/Zhai.jpg']
 };
 exports.getResult = function getResult(url, callback) {
     http.get(url, (res) => {
@@ -77,10 +77,10 @@ exports.downFX = function downFX() {
                         let _$ = cheerio.load(da2.body);
                         let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
                             b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
-/*                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
-                        try{this.sendMail({html: html});}catch(e){
-                            console.log('邮件发送失败'+e)
-                        }*/
+                        /*                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
+                                                try{this.sendMail({html: html});}catch(e){
+                                                    console.log('邮件发送失败'+e)
+                                                }*/
                         let articles = [];
                         /*                        articles[articles.length] = {
                                                     thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
@@ -106,14 +106,16 @@ exports.downFX = function downFX() {
                             })], (err, rst) => {
                                 // imgUrl = rst.url;
                                 let valText = $.html(val).replace(src, rst.url);
-                                articles[articles.length] = {
-                                    thumb_media_id: currency[text.substr(3, 5)][1],
-                                    author: '小潘',
-                                    title: text.substring(3).replace(/元 /g, '元'),
-                                    content: '<html><head></head><body>' + '<br/>' + valText + '<br/>' + $.html(val.next()) +wxConfig.bottomHtml+ '</body></html>',
-                                    digest: '市场本没有波动,做得人多了就有了波动!',
-                                    show_cover_pic: '0',
-                                }
+                                redis.getAsync(currency[text.substr(3, 5)][0]).then((res) => {
+                                    articles[articles.length] = {
+                                        thumb_media_id:res ,
+                                        author: '小潘',
+                                        title: text.substring(3).replace(/元 /g, '元'),
+                                        content: '<html><head></head><body>' + '<br/>' + valText + '<br/>' + $.html(val.next()) + wxConfig.bottomHtml + '</body></html>',
+                                        digest: '市场本没有波动,做得人多了就有了波动!',
+                                        show_cover_pic: '0',
+                                    }
+                                });
                             });
                             callback();         //注意:放在大括号里调用不到...此行会执行3次,但最终只会调用一次方法
                         }, (err) => {
@@ -121,9 +123,9 @@ exports.downFX = function downFX() {
                                 console.log(JSON.stringify(err));
                                 return;
                             }
-                            let inter = 0,flag=0;
+                            let inter = 0, flag = 0;
                             inter = setInterval(function () {
-                                if(articles.length==arry.length) {
+                                if (articles.length == arry.length) {
                                     redis.getAsync('articles').then((resss) => {
                                         if (flag == 0 && resss && resss.length > 5) {
                                             articles = _.union(JSON.parse(resss), articles);
@@ -225,14 +227,16 @@ exports.downZhai = function downZhai() {
                                 }
                             })], (err, rst) => {
                                 aStr.replace(reg, rst.url);
-                                articles[articles.length] = {
-                                    thumb_media_id: currency['债市'][1],
-                                    author: '小潘',
-                                    title: text,
-                                    content: '<html><head></head><body>' + '<br/>' + aStr +wxConfig.bottomHtml+ '</body></html>',
-                                    digest: '市场本没有波动,做得人多了就有了波动!',
-                                    show_cover_pic: '1',
-                                }
+                                redis.getAsync(currency['债市'][0]).then((res) => {
+                                    articles[articles.length] = {
+                                        thumb_media_id:res ,
+                                        author: '小潘',
+                                        title: text,
+                                        content: '<html><head></head><body>' + '<br/>' + aStr + wxConfig.bottomHtml + '</body></html>',
+                                        digest: '市场本没有波动,做得人多了就有了波动!',
+                                        show_cover_pic: '1',
+                                    }
+                                });
                                 redis.getAsync('articles').then((resss) => {
                                     if (resss)
                                         articles = _.union(JSON.parse(resss), articles);
@@ -245,14 +249,16 @@ exports.downZhai = function downZhai() {
                                 })
                             });
                         } else {
-                            articles[articles.length] = {
-                                thumb_media_id: currency['债市'][1],
-                                author: '小潘',
-                                title: text,
-                                content: '<html><head></head><body>' + '<br/>' + aStr +wxConfig.bottomHtml+ '</body></html>',
-                                digest: '市场本没有波动,做得人多了就有了波动!',
-                                show_cover_pic: '1',
-                            }
+                            redis.getAsync(currency['债市'][0]).then((res) => {
+                                articles[articles.length] = {
+                                    thumb_media_id: res,
+                                    author: '小潘',
+                                    title: text,
+                                    content: '<html><head></head><body>' + '<br/>' + aStr + wxConfig.bottomHtml + '</body></html>',
+                                    digest: '市场本没有波动,做得人多了就有了波动!',
+                                    show_cover_pic: '1',
+                                }
+                            });
                             redis.getAsync('articles').then((resss) => {
                                 if (resss && resss.length > 5)
                                     articles = _.union(JSON.parse(resss), articles);
@@ -300,15 +306,17 @@ exports.downGold = function downGold() {
                                     next(err, result);
                                 }
                             })], (err, rst) => {
-                                aStr=aStr.replace(src, rst.url);
-                                articles[articles.length] = {
-                                    thumb_media_id: currency['黄金'][1],
-                                    author: '小潘',
-                                    title: text.split('—')[1],
-                                    content: '<html><head></head><body>' + '<br/>' + aStr + wxConfig.bottomHtml+'</body></html>',
-                                    digest: '市场本没有波动,做得人多了就有了波动!',
-                                    show_cover_pic: '0',
-                                }
+                                aStr = aStr.replace(src, rst.url);
+                                redis.getAsync(currency['黄金'][0]).then((res) => {
+                                    articles[articles.length] = {
+                                        thumb_media_id: res,
+                                        author: '小潘',
+                                        title: text.split('—')[1],
+                                        content: '<html><head></head><body>' + '<br/>' + aStr + wxConfig.bottomHtml + '</body></html>',
+                                        digest: '市场本没有波动,做得人多了就有了波动!',
+                                        show_cover_pic: '0',
+                                    }
+                                });
                                 redis.getAsync('articles').then((resss) => {
                                     if (resss)
                                         articles = _.union(JSON.parse(resss), articles);
@@ -325,7 +333,7 @@ exports.downGold = function downGold() {
                                 thumb_media_id: currency['黄金'][1],
                                 author: '小潘',
                                 title: text.split('—')[1],
-                                content: '<html><head></head><body>' + '<br/>' + aStr +wxConfig.bottomHtml+ '</body></html>',
+                                content: '<html><head></head><body>' + '<br/>' + aStr + wxConfig.bottomHtml + '</body></html>',
                                 digest: '市场本没有波动,做得人多了就有了波动!',
                                 show_cover_pic: '0',
                             }
@@ -355,13 +363,13 @@ exports.sendNews = function sendNews() {
         if (!ress || ress != '1') {
             redis.getAsync('articles').then((res) => {
                 let articles = res ? JSON.parse(res) : [];
-                if (articles.length < 1) return;
+                if (articles.length < 5) return;
                 console.log(JSON.stringify(articles));
                 api.uploadNews({articles: articles}, (err, result) => {
                     console.log(JSON.stringify(result));
-/*                    api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
-                        console.log(JSON.stringify(re));
-                    });*/
+                    /*                    api.previewNews('o9JfX0YUGrbpbcZFekCsDmjO-Xkw', result.media_id, (er, re) => {
+                                            console.log(JSON.stringify(re));
+                                        });*/
                     api.massSendNews(result.media_id, true, (er, re) => {
                         console.log(JSON.stringify(re));
                     })
@@ -376,6 +384,25 @@ exports.sendNews = function sendNews() {
     });
     /*        clearInterval(inter);
         }, 500)*/
+}
+
+exports.uploadImg = function uploadImg() {
+    _each(currency, (val, key, list) => {
+        redis.getAsync(val[0]).then((res) => {
+            if (!res) {
+                api.uploadMedia(val[1], 'thumb', (err, result) => {
+                    if (err) {
+                        console.log('上传文件错误' + JSON.stringify(err))
+                    } else {
+                        redis.setAsync(val[0], result.thumb_media_id, 'EX', 172800).then((r) => {
+                            // redis.getAsync(date).then((rr) => {console.log(rr)})
+                            console.log("缩略图已上传.")
+                        });
+                    }
+                })
+            }
+        })
+    })
 }
 /*
 http.get('http://nodejs.org/dist/index.json', (res) => {
