@@ -81,7 +81,18 @@ exports.downFX = function downFX() {
                                                 try{this.sendMail({html: html});}catch(e){
                                                     console.log('邮件发送失败'+e)
                                                 }*/
-                        let articles = [];
+                        let texts = _$('div.sub_con > p');
+                        let articles = [],textArr=[],tex='';
+                        texts = _.initial(_.rest(texts));
+                        _.each(contents, (el, i, list) => {
+                            if($.text(el).startsWith('货币')){
+                                if(tex!='') textArr[textArr.length]=tex;
+                                tex='';
+                            }else{
+                                tex += $.html(el);
+                            }
+                        });
+                        textArr[textArr.length]=tex;
                         /*                        articles[articles.length] = {
                                                     thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                                     author: '小潘',
@@ -96,7 +107,6 @@ exports.downFX = function downFX() {
                             let imgPath = '/opt/html/GIF/' + currency[text.substr(3, 5)][0] + '.gif';
                             // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
                             // let imgUrl = '';
-                            curIndex++;
                             async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
@@ -105,18 +115,19 @@ exports.downFX = function downFX() {
                                 }
                             })], (err, rst) => {
                                 // imgUrl = rst.url;
-                                let valText = $.html(val).replace(src, rst.url);
+                                let valText = texts[curIndex].replace(src, rst.url);
                                 redis.getAsync(currency[text.substr(3, 5)][0]).then((res) => {
                                     articles[articles.length] = {
                                         thumb_media_id:res ,
                                         author: '小潘',
                                         title: text.substring(3).replace(/元 /g, '元'),
-                                        content: '<html><head></head><body>' + '<br/>' + valText + '<br/>' + $.html(val.next()) + wxConfig.bottomHtml + '</body></html>',
+                                        content: '<html><head></head><body>' + '<br/>' + valText + '<br/>'  + wxConfig.bottomHtml + '</body></html>',
                                         digest: '市场本没有波动,做得人多了就有了波动!',
                                         show_cover_pic: '0',
                                     }
                                 });
                             });
+                            curIndex++;
                             callback();         //注意:放在大括号里调用不到...此行会执行3次,但最终只会调用一次方法
                         }, (err) => {
                             if (err) {
@@ -341,7 +352,7 @@ exports.downGold = function downGold() {
                             });
                             redis.getAsync('articles').then((resss) => {
                                 if (resss && resss.length > 5)
-                                    articles = _.union(JSON.parse(resss), articles);
+                                    articles = _.union(articles,JSON.parse(resss));
                                 redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                     redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
                                         // redis.getAsync(date).then((rr) => {console.log(rr)})
