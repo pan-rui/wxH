@@ -84,7 +84,7 @@ exports.downFX = function downFX() {
                         let texts = _$('div.sub_con > p');
                         let articles = [],textArr=[],tex='';
                         texts = _.initial(_.rest(texts));
-                        _.each(contents, (el, i, list) => {
+                        _.each(texts, (el, i, list) => {
                             if($(el).text().startsWith('货币')){
                                 if(tex!='') textArr[textArr.length]=tex;
                                 tex='';
@@ -115,7 +115,7 @@ exports.downFX = function downFX() {
                                 }
                             })], (err, rst) => {
                                 // imgUrl = rst.url;
-                                let valText = texts[curIndex].replace(src, rst.url);
+                                let valText = textArr[curIndex].replace(src, rst.url);
                                 redis.getAsync(currency[text.substr(3, 5)][0]).then((res) => {
                                     articles[articles.length] = {
                                         thumb_media_id:res ,
