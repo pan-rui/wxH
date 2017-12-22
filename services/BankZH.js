@@ -93,7 +93,6 @@ exports.downFX = function downFX() {
                             }
                         });
                         textArr[textArr.length]=tex;
-                        console.log(JSON.stringify(textArr));
                         /*                        articles[articles.length] = {
                                                     thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                                     author: '小潘',
@@ -108,15 +107,15 @@ exports.downFX = function downFX() {
                             let imgPath = '/opt/html/GIF/' + currency[text.substr(3, 5)][0] + '.gif';
                             // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
                             // let imgUrl = '';
-                            async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
+                            async.waterfall([(next) => (this.downImg({src:src,path,imgPath,index:curIndex}, next)), (rst1, next) => api.uploadImage(rst1.path, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
                                 } else {
-                                    next(err, result);
+                                    next(err, {index:rst1.index, result:result,src:rst1.src});
                                 }
                             })], (err, rst) => {
                                 // imgUrl = rst.url;
-                                let valText = textArr[curIndex].replace(src, rst.url);
+                                let valText = textArr[rst.index].replace(rst.src, rst.result.url);
                                 redis.getAsync(currency[text.substr(3, 5)][0]).then((res) => {
                                     articles[articles.length] = {
                                         thumb_media_id:res ,
@@ -187,21 +186,21 @@ exports.sendMail = function sendMail(opt) {
     });
 }
 
-exports.downImg = function downImg(url, path, callback) {
-    http.get(url, function (res) {
+exports.downImg = function downImg(params, callback) {
+    http.get(params.src, function (res) {
         var imgData = "";
         res.setEncoding("binary"); //一定要设置response的编码为binary否则会下载下来的图片打不开
         res.on("data", function (chunk) {
             imgData += chunk;
         });
         res.on("end", async function () {
-            await fs.writeFile(path, imgData, "binary", async function (err, result1) {
+            await fs.writeFile(params.path, imgData, "binary", async function (err, result1) {
                 if (err) {
-                    console.log(url + '\n' + path + '\n' + JSON.stringify(err));
+                    console.log(url + '\n' + params.path + '\n' + JSON.stringify(err));
                     return;
                 }
                 // console.log('down success');
-                await callback(err, path);
+                await callback(err, params);
             });
         });
     });
@@ -231,7 +230,7 @@ exports.downZhai = function downZhai() {
                         if (reg.test(aStr)) {
                             let src = RegExp.$1,
                                 imgPath = '/opt/html/GIF/' + currency[text.substr(0, 2)][0] + '.gif';
-                            async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
+                            async.waterfall([(next) => (this.downImg({path:imgPath,src:src}, next)), (rst1, next) => api.uploadImage(rst1.path, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
                                 } else {
@@ -311,7 +310,7 @@ exports.downGold = function downGold() {
                         let reg = /src="([^"]+)/;
                         if (reg.test(aStr)) {
                             let src = RegExp.$1, imgPath = '/opt/html/GIF/' + currency['黄金'][0] + '.gif';
-                            async.waterfall([(next) => (this.downImg(src, imgPath, next)), (rst1, next) => api.uploadImage(rst1, (err, result) => {
+                            async.waterfall([(next) => (this.downImg({path:imgPath,src:src}, next)), (rst1, next) => api.uploadImage(rst1.path, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
                                 } else {
