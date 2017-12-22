@@ -107,7 +107,7 @@ exports.downFX = function downFX() {
                             let imgPath = '/opt/html/GIF/' + currency[text.substr(3, 5)][0] + '.gif';
                             // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
                             // let imgUrl = '';
-                            async.waterfall([(next) => (this.downImg({src:src,path,imgPath,index:curIndex}, next)), (rst1, next) => api.uploadImage(rst1.path, (err, result) => {
+                            async.waterfall([(next) => (this.downImg({src:src,path:imgPath,index:curIndex}, next)), (rst1, next) => api.uploadImage(rst1.path, (err, result) => {
                                 if (err) {
                                     console.log('上传文件错误' + JSON.stringify(err))
                                 } else {
