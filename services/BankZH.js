@@ -93,6 +93,7 @@ exports.downFX = function downFX() {
                             }
                         });
                         textArr[textArr.length]=tex;
+                        console.log(JSON.stringify(textArr));
                         /*                        articles[articles.length] = {
                                                     thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
                                                     author: '小潘',
