@@ -8,9 +8,17 @@ var tes = require('../services/BankZH');
 
 const firstIn = {video: 'cvmBAMM_C1js-uiw3FKfAgUjA25AJ_9QvCmtlr9mdODm9s234Xs6WcB8Tq-lusgT'}
 var api = new WechatAPI(wxConfig.appid, wxConfig.appSecret);
-router.get('/', function (req, res, next) {
+router.get('/Gold', function (req, res, next) {
+    tes.downGold();
+    res.send('hello Gold!');
+});
+router.get('/FX', function (req, res, next) {
     tes.downFX();
-    res.send('hello haha!');
+    res.send('hello FX!');
+});
+router.get('/', function (req, res, next) {
+    tes.uploadImg();
+    res.send('hello uploadImg!');
 });
 /* GET home page. */
 router.get('/msg', function (req, res, next) {
