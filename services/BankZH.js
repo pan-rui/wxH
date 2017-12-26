@@ -330,7 +330,7 @@ exports.downGold = function downGold() {
                                 });
                                 redis.getAsync('articles').then((resss) => {
                                     if (resss)
-                                        articles = _.union(JSON.parse(resss), articles);
+                                        articles = _.union(articles,JSON.parse(resss));
                                     redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
                                         redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
                                             // redis.getAsync(date).then((rr) => {console.log(rr)})
