@@ -77,10 +77,10 @@ exports.downFX = function downFX() {
                         let _$ = cheerio.load(da2.body);
                         let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
                             b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
-                        /*                        let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
-                                                try{this.sendMail({html: html});}catch(e){
-                                                    console.log('邮件发送失败'+e)
-                                                }*/
+                            let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
+                            try{this.sendMail({html: html});}catch(e){
+                                console.log('邮件发送失败'+e)
+                            }
                         let texts = _$('div.sub_con > p');
                         let articles = [],textArr=[],tex='';
                         texts = _.initial(_.rest(texts));

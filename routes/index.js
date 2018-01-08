@@ -16,9 +16,17 @@ router.get('/FX', function (req, res, next) {
     tes.downFX();
     res.send('hello FX!');
 });
-router.get('/', function (req, res, next) {
+router.get('/upload', function (req, res, next) {
     tes.uploadImg();
     res.send('hello uploadImg!');
+});
+router.get('/Zhai', function (req, res, next) {
+    tes.downZhai();
+    res.send('hello Zhai!');
+});
+router.get('/send', function (req, res, next) {
+    tes.sendNews();
+    res.send('hello send!');
 });
 /* GET home page. */
 router.get('/msg', function (req, res, next) {
