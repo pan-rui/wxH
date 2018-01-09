@@ -108,6 +108,10 @@ exports.downFX = function downFX() {
                             let arry = [b1, b2, b3], curIndex = 0;
                             async.forEach(arry, (val, callback) => {
                                 let text = val.prev().text(), src = val.find('img').first().attr('src');
+                                if(src.indexOf("http")!=0){
+                                    let in1=url57.lastIndexOf('/'),in2=src.indexOf('/')
+                                    src=url57.substring(0,in1)+src.substring(in2)
+                                }
                                 let imgPath = '/opt/html/GIF/' + currency[text.substr(3, 5)][0] + '.gif';
                                 // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
                                 // let imgUrl = '';
