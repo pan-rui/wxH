@@ -54,7 +54,7 @@ console.log('ERROR============>'+JSON.stringify(err));
 /*var date=new Date();
 let rule1= new schedule.RecurrenceRule();
 rule1.minute = [1, 11, 21, 31, 41, 51];*/
-schedule.scheduleJob('1 */10 14-19 * * 1-5',function(){tes.downGold()});
+schedule.scheduleJob('1 */10 13-19 * * 1-5',function(){tes.downGold()});
 schedule.scheduleJob('21 */10 13-19 * * 1-5',function(){tes.downZhai()});
 schedule.scheduleJob('41 */10 13-19 * * 1-5',function(){tes.downFX()});
 schedule.scheduleJob('1 */8 * * * *',function(){tes.uploadImg()});
