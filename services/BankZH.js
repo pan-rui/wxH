@@ -210,7 +210,7 @@ exports.downImg = function downImg(params, callback) {
         res.on("end", async function () {
             await fs.writeFile(params.path, imgData, "binary", async function (err, result1) {
                 if (err) {
-                    console.log(url + '\n' + params.path + '\n' + JSON.stringify(err));
+                    console.log(params.src + '\n' + params.path + '\n' + JSON.stringify(err));
                     return;
                 }
                 // console.log('down success');
