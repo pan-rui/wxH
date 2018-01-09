@@ -64,98 +64,107 @@ exports.dateFormat = function dateFormat(date, format) {
 exports.downFX = function downFX() {
     this.getResult(url57, function (data) {
         let $ = cheerio.load(data.body);
-        let li = $('div.news li').first();
-        const date = li.find('span').first().text().replace('[', '').replace(']', '').trim();
-        const href = li.find('a').first().attr('href');
-        const text = li.find('a').first().text();
-        if (this.dateFormat(new Date(), 'yyyy-MM-dd') == date && '汇市观潮' == text.substr(0, 4)) {
-            // if ('汇市观潮' == text.substr(0, 4)) {
-            let redisKey = date + 'FX';
-            redis.getAsync(redisKey).then((ress) => {
-                if (!ress || ress != '1') {
-                    this.getResult(url57 + href.substr(2), (da2) => {
-                        let _$ = cheerio.load(da2.body);
-                        let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
-                            b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
-/*                            let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
-                            try{this.sendMail({html: html});}catch(e){
-                                console.log('邮件发送失败'+e)
-                            }*/
-                        let texts = _$('div.sub_con > p');
-                        let articles = [],textArr=[],tex='';
-                        texts = _.initial(_.rest(texts));
-                        _.each(texts, (el, i, list) => {
-                            if($(el).text().startsWith('货币')){
-                                if(tex!='') textArr[textArr.length]=tex;
-                                tex='';
-                            }else{
-                                tex += $.html(el);
+        // let li = $('div.news li').first();
+        for(let [ii, li] of Object.entries([$('div.news li').first(),$('div.news li').eq(1)])) {
+        // for(var li in [$('div.news li').first(),$('div.news li').eq(1)]) {
+            const date = li.find('span').first().text().replace('[', '').replace(']', '').trim();
+            const href = li.find('a').first().attr('href');
+            const text = li.find('a').first().text();
+            if (this.dateFormat(new Date(), 'yyyy-MM-dd') == date && '汇市观潮' == text.substr(0, 4)) {
+                // if ('汇市观潮' == text.substr(0, 4)) {
+                let redisKey = date + 'FX';
+                redis.getAsync(redisKey).then((ress) => {
+                    if (!ress || ress != '1') {
+                        this.getResult(url57 + href.substr(2), (da2) => {
+                            let _$ = cheerio.load(da2.body);
+                            let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
+                                b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
+                            let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
+                            try {
+                                this.sendMail({html: html});
+                            } catch (e) {
+                                console.log('邮件发送失败' + e)
                             }
-                        });
-                        textArr[textArr.length]=tex;
-                        /*                        articles[articles.length] = {
-                                                    thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
-                                                    author: '小潘',
-                                                    title: '充气女友进化论,哈哈',
-                                                    content: '<html><head></head><body><iframe frameborder="0" width="640" height="498" src="https://v.qq.com/iframe/player.html?vid=p05203wum6o&tiny=0&auto=0" allowfullscreen></iframe></body></html>',
-                                                    digest: '市场本没有波动,做得人多了就有了波动!',
-                                                    show_cover_pic: '0',
-                                                };*/
-                        let arry = [b1, b2, b3], curIndex = 0;
-                        async.forEach(arry, (val, callback) => {
-                            let text = val.prev().text(), src = val.find('img').first().attr('src');
-                            let imgPath = '/opt/html/GIF/' + currency[text.substr(3, 5)][0] + '.gif';
-                            // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
-                            // let imgUrl = '';
-                            async.waterfall([(next) => (this.downImg({src:src,path:imgPath,index:curIndex}, next)), (rst1, next) => api.uploadImage(rst1.path, (err, result) => {
-                                if (err) {
-                                    console.log('上传文件错误' + JSON.stringify(err))
+                            let texts = _$('div.sub_con > p');
+                            let articles = [], textArr = [], tex = '';
+                            texts = _.initial(_.rest(texts));
+                            _.each(texts, (el, i, list) => {
+                                if ($(el).text().startsWith('货币')) {
+                                    if (tex != '') textArr[textArr.length] = tex;
+                                    tex = '';
                                 } else {
-                                    next(err, {index:rst1.index, result:result,src:rst1.src});
+                                    tex += $.html(el);
                                 }
-                            })], (err, rst) => {
-                                // imgUrl = rst.url;
-                                let valText = textArr[rst.index].replace(rst.src, rst.result.url);
-                                redis.getAsync(currency[text.substr(3, 5)][0]).then((res) => {
-                                    articles[articles.length] = {
-                                        thumb_media_id:res ,
-                                        author: '小潘',
-                                        title: text.substring(3).replace(/元 /g, '元'),
-                                        content: '<html><head></head><body>' + '<br/>' + valText + '<br/>'  + wxConfig.bottomHtml + '</body></html>',
-                                        digest: '市场本没有波动,做得人多了就有了波动!',
-                                        show_cover_pic: '0',
-                                    }
-                                });
                             });
-                            curIndex++;
-                            callback();         //注意:放在大括号里调用不到...此行会执行3次,但最终只会调用一次方法
-                        }, (err) => {
-                            if (err) {
-                                console.log(JSON.stringify(err));
-                                return;
-                            }
-                            let inter = 0, flag = 0;
-                            inter = setInterval(function () {
-                                if (articles.length == arry.length) {
-                                    redis.getAsync('articles').then((resss) => {
-                                        if (flag == 0 && resss && resss.length > 5) {
-                                            articles = _.union(JSON.parse(resss), articles);
-                                            flag = 1;
+                            textArr[textArr.length] = tex;
+                            /*                        articles[articles.length] = {
+                                                        thumb_media_id: 'jjLhKoDS--j7RtmDrF7uiuZVLa881vzKrnmZT7j09WM3W_-1WRUREz9REdlyphj_',
+                                                        author: '小潘',
+                                                        title: '充气女友进化论,哈哈',
+                                                        content: '<html><head></head><body><iframe frameborder="0" width="640" height="498" src="https://v.qq.com/iframe/player.html?vid=p05203wum6o&tiny=0&auto=0" allowfullscreen></iframe></body></html>',
+                                                        digest: '市场本没有波动,做得人多了就有了波动!',
+                                                        show_cover_pic: '0',
+                                                    };*/
+                            let arry = [b1, b2, b3], curIndex = 0;
+                            async.forEach(arry, (val, callback) => {
+                                let text = val.prev().text(), src = val.find('img').first().attr('src');
+                                let imgPath = '/opt/html/GIF/' + currency[text.substr(3, 5)][0] + '.gif';
+                                // let imgPath = currency[text.substr(3, 5)][0] + '.gif';
+                                // let imgUrl = '';
+                                async.waterfall([(next) => (this.downImg({
+                                    src: src,
+                                    path: imgPath,
+                                    index: curIndex
+                                }, next)), (rst1, next) => api.uploadImage(rst1.path, (err, result) => {
+                                    if (err) {
+                                        console.log('上传文件错误' + JSON.stringify(err))
+                                    } else {
+                                        next(err, {index: rst1.index, result: result, src: rst1.src});
+                                    }
+                                })], (err, rst) => {
+                                    // imgUrl = rst.url;
+                                    let valText = textArr[rst.index].replace(rst.src, rst.result.url);
+                                    redis.getAsync(currency[text.substr(3, 5)][0]).then((res) => {
+                                        articles[articles.length] = {
+                                            thumb_media_id: res,
+                                            author: '小潘',
+                                            title: text.substring(3).replace(/元 /g, '元'),
+                                            content: '<html><head></head><body>' + '<br/>' + valText + '<br/>' + wxConfig.bottomHtml + '</body></html>',
+                                            digest: '市场本没有波动,做得人多了就有了波动!',
+                                            show_cover_pic: '0',
                                         }
-                                        redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
-                                            redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
-                                                // redis.getAsync(date).then((rr) => {console.log(rr)})
-                                                console.log(redisKey + '====已处理')
-                                            });
-                                        })
-                                    })
-                                    clearInterval(inter);
+                                    });
+                                });
+                                curIndex++;
+                                callback();         //注意:放在大括号里调用不到...此行会执行3次,但最终只会调用一次方法
+                            }, (err) => {
+                                if (err) {
+                                    console.log(JSON.stringify(err));
+                                    return;
                                 }
-                            }, 500)
+                                let inter = 0, flag = 0;
+                                inter = setInterval(function () {
+                                    if (articles.length == arry.length) {
+                                        redis.getAsync('articles').then((resss) => {
+                                            if (flag == 0 && resss && resss.length > 5) {
+                                                articles = _.union(JSON.parse(resss), articles);
+                                                flag = 1;
+                                            }
+                                            redis.setAsync('articles', JSON.stringify(articles), 'EX', 28800).then((rr) => {
+                                                redis.setAsync(redisKey, '1', 'EX', 28800).then((r) => {
+                                                    // redis.getAsync(date).then((rr) => {console.log(rr)})
+                                                    console.log(redisKey + '====已处理')
+                                                });
+                                            })
+                                        })
+                                        clearInterval(inter);
+                                    }
+                                }, 500)
+                            });
                         });
-                    });
-                }
-            });
+                    }
+                });
+            }
         }
     })
 }
