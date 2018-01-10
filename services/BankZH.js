@@ -78,8 +78,13 @@ exports.downFX = function downFX() {
                         let subUrl=url57 + href.substr(2);
                         this.getResult(subUrl, (da2) => {
                             let _$ = cheerio.load(da2.body);
-                            let contents = _$('div.sub_con'), b1 = contents.find('p[align]').eq(1),
-                                b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);
+                            let contents = _$('div.sub_con'),arry=[];
+                            contents.find('p[align]').each((i,el)=>{
+                                if($(el).find('img').length>0)
+                                    arry[arry.length]=el;
+                            })
+/*                                b1 = contents.find('p[align]').eq(1),
+                                b2 = contents.find('p[align]').eq(2), b3 = contents.find('p[align]').eq(3);*/
                             let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
                             try {
                                 this.sendMail({html: html});
@@ -106,7 +111,7 @@ exports.downFX = function downFX() {
                                                         digest: '市场本没有波动,做得人多了就有了波动!',
                                                         show_cover_pic: '0',
                                                     };*/
-                            let arry = [b1, b2, b3], curIndex = 0;
+                            let curIndex = 0;
                             async.forEach(arry, (val, callback) => {
                                 let text = val.prev().text(), src = val.find('img').first().attr('src');
                                 if(src.indexOf("http")!=0){
