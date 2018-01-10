@@ -82,7 +82,7 @@ exports.downFX = function downFX() {
                                 colorArry = ['red', 'green', 'blue'];
                             contents.find('p[align]').each((i,el)=>{
                                 if($(el).find('img').length>0) {
-                                    arry[arry.length] = el;
+                                    arry[arry.length] = $(el);
                                     html+=`<p style="color: ${colorArry.shift()};">${$(el).prev().text()}</p>`
                                 }
                             })
