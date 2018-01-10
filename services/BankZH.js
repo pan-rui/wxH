@@ -142,7 +142,7 @@ exports.downFX = function downFX() {
                                         articles[articles.length] = {
                                             thumb_media_id: res,
                                             author: '小潘',
-                                            title: text.substring(3).replace(/元 /g, '元'),
+                                            title: text.substring(3).replace(/\s/g, ''),
                                             content: '<html><head></head><body>' + '<br/>' + valText + '<br/>' + wxConfig.bottomHtml + '</body></html>',
                                             digest: '市场本没有波动,做得人多了就有了波动!',
                                             show_cover_pic: '0',
