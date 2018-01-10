@@ -159,5 +159,4 @@ router.get('/eur', function (req, res, next) {
     });
 });
 
-
 module.exports = router;
