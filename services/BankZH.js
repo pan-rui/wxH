@@ -79,10 +79,9 @@ exports.downFX = function downFX() {
                         this.getResult(subUrl, (da2) => {
                             let _$ = cheerio.load(da2.body);
                             let contents = _$('div.sub_con'), arry = [], html = '<html><head></head><body>',
-                                colorArry = ['red', 'green', 'blue'],pal=0;
+                                colorArry = ['red', 'green', 'blue'];
                             contents.find('p[align]').each((i,el)=>{
                                 if($(el).find('img').length>0) {
-                                    if(pal==0) pal=i;
                                     arry[arry.length] = $(el);
                                     html+=`<p style="color: ${colorArry.shift()};">${$(el).prev().text()}</p>`
                                 }
@@ -96,17 +95,20 @@ exports.downFX = function downFX() {
                             } catch (e) {
                                 console.log('邮件发送失败' + e)
                             }
-                            let texts = _$('div.sub_con > p'),firstIndex=texts.index(_$('div.sub_con p[align]').eq(pal));
-                            let articles = [], textArr = [], tex = '';
-                            texts = _.initial(_.initial(_.rest(texts)));
+                            let texts = _$('div.sub_con > p');
+                            let articles = [], textArr = [], tex = '',fi=0;
+                            texts = _.initial(_.rest(texts));
                             _.each(texts, (el, i, list) => {
-                                if(i>=firstIndex) {
+                                if(fi>0) {
                                     if ($(el).text().startsWith('货币')) {
                                         if (tex != '') textArr[textArr.length] = tex;
                                         tex = '';
                                     } else {
                                         tex += $.html(el);
                                     }
+                                }else{
+                                    if($(el).next().find('img').length>0)
+                                        fi=i+1;
                                 }
                             });
                             textArr[textArr.length] = tex;
