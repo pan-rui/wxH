@@ -79,9 +79,10 @@ exports.downFX = function downFX() {
                         this.getResult(subUrl, (da2) => {
                             let _$ = cheerio.load(da2.body);
                             let contents = _$('div.sub_con'), arry = [], html = '<html><head></head><body>',
-                                colorArry = ['red', 'green', 'blue'];
+                                colorArry = ['red', 'green', 'blue'],pal=0;
                             contents.find('p[align]').each((i,el)=>{
                                 if($(el).find('img').length>0) {
+                                    if(pal==0) pal=i;
                                     arry[arry.length] = $(el);
                                     html+=`<p style="color: ${colorArry.shift()};">${$(el).prev().text()}</p>`
                                 }
@@ -95,15 +96,17 @@ exports.downFX = function downFX() {
                             } catch (e) {
                                 console.log('邮件发送失败' + e)
                             }
-                            let texts = _$('div.sub_con > p');
+                            let texts = _$('div.sub_con > p'),firstIndex=texts.index(_$('div.sub_con p[align]').eq(pal));
                             let articles = [], textArr = [], tex = '';
-                            texts = _.initial(_.rest(texts));
+                            texts = _.initial(_.initial(_.rest(texts)));
                             _.each(texts, (el, i, list) => {
-                                if ($(el).text().startsWith('货币')) {
-                                    if (tex != '') textArr[textArr.length] = tex;
-                                    tex = '';
-                                } else {
-                                    tex += $.html(el);
+                                if(i>=firstIndex) {
+                                    if ($(el).text().startsWith('货币')) {
+                                        if (tex != '') textArr[textArr.length] = tex;
+                                        tex = '';
+                                    } else {
+                                        tex += $.html(el);
+                                    }
                                 }
                             });
                             textArr[textArr.length] = tex;
