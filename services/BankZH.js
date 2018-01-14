@@ -473,6 +473,8 @@ exports.printMap=function printMap(obj) {
         console.log(k);
         if(typeof v == 'object'){
             printMap(v);
+        }else{
+            console.log(v);
         }
     }
 }
