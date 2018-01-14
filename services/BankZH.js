@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const http = require('http');
+const https = require('https');
 const rediz = require('redis');
 const fs = require('fs');
 const bluebird = require('bluebird');
@@ -26,6 +27,7 @@ const currency = {
     '债市': ['Zhai', '/opt/html/images/Zhai.jpg']
 };
 exports.getResult = function getResult(url, callback) {
+    let schema=url.startsWith("https")?https:http;
     http.get(url, (res) => {
         if (res.statusCode == 200) {
             res.setEncoding('utf8');
@@ -91,7 +93,7 @@ exports.downFX = function downFX() {
                             // let html = `<html><head></head><body><p style="color: red;">${b1.prev().text()}</p><p style="color: green;">${b2.prev().text()}</p><p style="color: blue;">${b3.prev().text()}</p> </body>`;
                             try {
                                 html+='</body>';
-                                this.sendMail({html: html});
+                                this.sendMail({subject:'今日行情',html: html});
                             } catch (e) {
                                 console.log('邮件发送失败' + e)
                             }
@@ -202,7 +204,7 @@ exports.sendMail = function sendMail(opt) {
     let mailOptions = {
         from: '"panrui-520" <panrui-520@163.com>', // sender address
         to: '79277490@qq.com', // list of receivers
-        subject: '今日行情', // Subject line
+        subject: opt.subject, // Subject line
         text: opt.content, // plain text body
         html: opt.html // html body
     };
@@ -445,6 +447,23 @@ exports.uploadImg = function uploadImg() {
             }
         })
     })
+}
+exports.checkIpsw=function checkIpsw() {
+    let url='https://ipsw.me/api/ios/v3/device/iPhone7,2';
+    this.getResult(url, function (data) {
+        let iObj = data.body;
+        if(iObj['iPhone7,2']){
+            let name=iObj['iPhone7,2'].name;
+            let firmwares=iObj['iPhone7,2'].firmwares;
+            if(name=='iPhone 6'){
+                for(let [i,o] of Object.entries(firmwares)) {
+                    if(o.signed && (o.version.startsWith('10.3')||o.version.startsWith('10.2'))){
+                        this.sendMail({subject:'IOS 降级开放验证',content:JSON.stringify(o)});
+                    }
+                }
+            }
+        }
+    });
 }
 /*
 http.get('http://nodejs.org/dist/index.json', (res) => {

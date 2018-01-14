@@ -59,5 +59,6 @@ schedule.scheduleJob('21 */10 13-19 * * 1-5',function(){tes.downZhai()});
 schedule.scheduleJob('41 */10 13-19 * * 1-5',function(){tes.downFX()});
 schedule.scheduleJob('1 */8 * * * *',function(){tes.uploadImg()});
 schedule.scheduleJob('1 * 13-19 * * 1-5',function(){tes.sendNews()});
+schedule.scheduleJob('1 */5 * * * *',function(){tes.checkIpsw()});
 
 module.exports = app;
