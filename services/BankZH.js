@@ -28,7 +28,7 @@ const currency = {
 };
 exports.getResult = function getResult(url, callback) {
     let schema=url.startsWith("https")?https:http;
-    http.get(url, (res) => {
+    schema.get(url, (res) => {
         if (res.statusCode == 200) {
             res.setEncoding('utf8');
             var body = '';
