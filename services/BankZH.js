@@ -451,6 +451,7 @@ exports.uploadImg = function uploadImg() {
 exports.checkIpsw=function checkIpsw() {
     let url='https://ipsw.me/api/ios/v3/device/iPhone7,2';
     this.getResult(url, function (data) {
+        this.printObj(data.body);
         this.printMap(data.body);
         let iObj = data.body;
         if(iObj['iPhone7,2']){
@@ -471,8 +472,19 @@ exports.checkIpsw=function checkIpsw() {
 exports.printMap=function printMap(obj) {
     for(let [k,v] of Object.entries(obj)) {
         console.log(k);
-        if(typeof v == 'object'){
+        if(v instanceof Object){
             printMap(v);
+        }else{
+            console.log(v);
+        }
+    }
+}
+
+exports.printObj=function printObj(obj) {
+    for(let v of Object.values(obj)) {
+        console.log(v);
+        if(v instanceof Object){
+            printObj(v);
         }else{
             console.log(v);
         }
