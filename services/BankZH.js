@@ -456,6 +456,7 @@ exports.checkIpsw=function checkIpsw() {
             let name=iObj['iPhone7,2'].name;
             let firmwares=iObj['iPhone7,2'].firmwares;
             if(name=='iPhone 6'){
+                console.log('检测正在进行.......................');
                 for(let [i,o] of Object.entries(firmwares)) {
                     if(o.signed && (o.version.startsWith('10.3')||o.version.startsWith('10.2'))){
                         this.sendMail({subject:'IOS 降级开放验证',content:JSON.stringify(o)});
