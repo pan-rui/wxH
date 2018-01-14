@@ -451,6 +451,7 @@ exports.uploadImg = function uploadImg() {
 exports.checkIpsw=function checkIpsw() {
     let url='https://ipsw.me/api/ios/v3/device/iPhone7,2';
     this.getResult(url, function (data) {
+        console.log(JSON.stringify(data.body));
         let iObj = data.body;
         if(iObj['iPhone7,2']){
             let name=iObj['iPhone7,2'].name;

@@ -28,6 +28,10 @@ router.get('/send', function (req, res, next) {
     tes.sendNews();
     res.send('hello send!');
 });
+router.get('/checkIpsw', function (req, res, next) {
+    tes.checkIpsw();
+    res.send('checkIpsw.....!');
+});
 /* GET home page. */
 router.get('/msg', function (req, res, next) {
     wxConfig.wxVerify(req, res, wxConfig.token);
