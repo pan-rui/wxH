@@ -451,8 +451,7 @@ exports.uploadImg = function uploadImg() {
 exports.checkIpsw=function checkIpsw() {
     let url='https://ipsw.me/api/ios/v3/device/iPhone7,2';
     this.getResult(url, function (data) {
-        this.printObj(JSON.parse(data.body));
-        this.printMap(JSON.parse(data.body));
+        // this.printMap(JSON.parse(data.body));
         let iObj = JSON.parse(data.body);
         if(iObj['iPhone7,2']){
             let name=iObj['iPhone7,2'].name;
@@ -471,25 +470,23 @@ exports.checkIpsw=function checkIpsw() {
 
 exports.printMap=function printMap(obj) {
     for(let [k,v] of Object.entries(obj)) {
-        console.log(k);
         if(v instanceof Object){
             printMap(v);
         }else{
-            console.log(v);
+            console.log(k+'============>'+v);
         }
     }
 }
 
-exports.printObj=function printObj(obj) {
+/*exports.printObj=function printObj(obj) {
     for(let v of Object.values(obj)) {
-        console.log(v);
         if(v instanceof Object){
             printObj(v);
         }else{
             console.log(v);
         }
     }
-}
+}*/
 /*
 http.get('http://nodejs.org/dist/index.json', (res) => {
     const { statusCode } = res;
