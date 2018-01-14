@@ -451,9 +451,9 @@ exports.uploadImg = function uploadImg() {
 exports.checkIpsw=function checkIpsw() {
     let url='https://ipsw.me/api/ios/v3/device/iPhone7,2';
     this.getResult(url, function (data) {
-        this.printObj(data.body);
-        this.printMap(data.body);
-        let iObj = data.body;
+        this.printObj(JSON.parse(data.body));
+        this.printMap(JSON.parse(data.body));
+        let iObj = JSON.parse(data.body);
         if(iObj['iPhone7,2']){
             let name=iObj['iPhone7,2'].name;
             let firmwares=iObj['iPhone7,2'].firmwares;
